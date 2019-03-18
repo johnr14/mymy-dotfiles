@@ -1,6 +1,7 @@
 #Colors
 
 ###COLORS###
+# 
 
 #Must encapsulate in \[ \] https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
 BLACK='\[\e[0;30m\]'
@@ -306,15 +307,31 @@ md5check() { md5sum "$1" | grep "$2";} #md5check [file] [key]
 ###################
 # TMUX            #
 ###################
-
+#Get info
 alias tmuxs="tmux display-message -p '#S'" # tmux current session name
 alias tmuxt="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux terminal attatched to session
 alias tmuxw="tmux display-message -p '#W'" # tmux current window name
 alias tmuxlw="tmux list-windows" # tmux list current sessions windows
-alias tmuxr="tmux rename-session -t 0 " # tmux rename current session FIXME
+# tmux display -pt "${TMUX_PANE:?}" '#{pane_index}' # tmux list sessions.windows.panes
+# I=$(tmux list-panes -a | grep $TMUX_PANE 2>/dev/null | awk -F: '{print $2}' | awk -F. '{print $2}') # Get current pane number
 
+
+#Rename
+alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux rename current session
 alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux rename current window
-alias tmuxk="" #tmux kill session name
+alias tmuxrp="tmux select-pane -t $( tmux display -pt "${TMUX_PANE:?}" '#{pane_index}') -T " tmux rename current panel
+
+#Create
+
+#Close/kill
+
+#Connect
+
+alias tmuxk="tmux kill-session -t " #tmux kill session name
+
+# TODO
+#tmux list sessions and prompt selection
+
 # TMUX DEFAULT CONF WINDOWS
 # https://stackoverflow.com/questions/5609192/how-to-set-up-tmux-so-that-it-starts-up-with-specified-windows-opened
 

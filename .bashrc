@@ -29,20 +29,27 @@ esac
 #Test if file .bashrc-mymybash exist
 # If not exist :
 #   install needed applications
-#       dfc htop pv git screen tmux xclip
+#       dfc htop pv git screen tmux xclip net-tools
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
-#
+#           File will hold personal variables in the futur
 
 
-#############################
+###############################
 # Set things up
-#############################
+###############################
 
-#Load alias
+#######################
+# Load aliases
+#######################
+
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
+
+#######################
+# Set language
+#######################
 
 export LANG=en_US.UTF-8
 if [ "$TERM" == "rxvt-unicode-256color" ]; then
@@ -51,29 +58,20 @@ else
      export TERM=xterm-color
 fi
 
-#Automatically attach to tmux
-#if [ -z "$TMUX" ]; then
-#    tmux attach -t Default || tmux new -s Default
-#fi
-
-#Force color
-case "$TERM" in
-    xterm)
-        color_prompt=yes
-        ;;
-    screen)
-        color_prompt=yes
-        ;;
-    *256*) 
-        color_prompt=yes
-        ;;
-esac
+#######################
+# Set terminal
+#######################
 
 # Check the window size after each command and, if necessary, update the values of LINES and COLUMNS
 shopt -s checkwinsize
 
 # Allow ctrl-S for history navigation (with ctrl-R)
 stty -ixon
+
+#######################
+# Set autocomplete
+#######################
+
 
 # Ignore case on auto-completion
 # Note: bind used instead of sticking these in .inputrc
@@ -89,6 +87,53 @@ export LS_COLORS='no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 
 # no bell
 set bell-style none
+
+###############################
+# Log out policy
+###############################
+
+###############
+# IS user ROOT?
+###############
+# Safety policy !
+# Never leave idle root login open !
+if (( $EUID == 0 )); then
+    # set a 5 min timeout policy for bash shell
+    TMOUT=300
+    readonly TMOUT
+    export TMOUT
+fi
+
+
+###############
+# SSH
+###############
+
+
+###############
+# TMUX
+###############
+
+#Automatically attach to tmux
+#if [ -z "$TMUX" ]; then
+#    tmux attach -t Default || tmux new -s Default
+#fi
+
+
+#Force color
+case "$TERM" in
+    xterm)
+        color_prompt=yes
+        ;;
+    screen)
+        color_prompt=yes
+        ;;
+    *256*) 
+        color_prompt=yes
+        ;;
+esac
+
+
 
 #############################
 # History control
@@ -135,6 +180,10 @@ export EDITOR=vim
 # Find all connections to ssh port
 # ss -nt | grep -Po "(\d|\.)+:22\s+\K[^:]+"
 
+###############
+# SSH
+###############
+
 function is_ssh {
 #case "/$(ps -p $PPID -o comm=)" in
 #  */sshd) screen -R -d;;
@@ -150,7 +199,7 @@ if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
 # many other tests omitted
 else
   #Check if running as root
-  if (( EUID == 0 )); then
+  if (( $EUID == 0 )); then
     #ROOT from sudo ? get the ip from pinky (quick hack)
     ROOTPTS=$(who am i | awk '{ print $6}' | sed -e 's/(:\(.*\):.*)/\1/')
     if [ -z "$ROOTPTS" ]; then
@@ -162,6 +211,13 @@ fi
 }
 
 
+
+
+
+
+###############
+#
+###############
 function exitstatus {
 
     EXITSTATUS="$?"
@@ -249,7 +305,7 @@ fi
 ###############
 
 #Check if running as root
-if (( EUID == 0 )); then
+if (( $EUID == 0 )); then
     USERNAME="${SGREEN}$REALUSER${OFF}>${RED}$USER"
     PROMPTSYMBOL="${RED}#"
 else
@@ -296,12 +352,16 @@ PS1+="${OFF}"
 
 
 
+###############################################################################
+# Informations and nice hacks
+###############################################################################
 
 
-
-
-
-
+###############################
+# Cool hacks
+###############################
+# https://stackoverflow.com/questions/9747952/pane-title-in-tmux
+# Scroling region using tput 
 
 
 
