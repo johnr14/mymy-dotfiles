@@ -1,7 +1,28 @@
-#Colors
+###############################################################################
+# Alias 
+#
+# Notes :
+# Double quotes " should be used if alias is to be searchable
+# Comment must be added at the end of the alias for it to be searchable
+# Naming convention
+#   for comment : mainprg - helping description
+#
+# Sections are seperated with a number of '#' and are used to search the alias file
+# 64 Major section
+# 32 Minor section 
+# 16 Minor sub-section
+# 8  Tiny  sub-section
+###############################################################################
 
-###COLORS###
-# 
+#
+# cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -v "#" | sed -e 's/\=.*\#/ =/'| sort
+# cat .bash_aliases | grep "^alias" | grep -E "#" | cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -E "#" | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s:
+#
+
+################$###############################################
+# Colors
+################################################################
+# not searchable
 
 #Must encapsulate in \[ \] https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
 BLACK='\[\e[0;30m\]'
@@ -24,16 +45,34 @@ WHITE='\[\e[1;37m\]'
 NC='\[\e[0m\]' # No Color
 OFF="\[\033[m\]"
 
-#BASH RELATED
+
+###############################################################
+# Alias helper                                          
+###############################################################
+
+
+
+alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
+alias alias-reload="source ~/.bash_aliases"  # alias - Reload only aliases
+alias alias-search="cat .bash_aliases | grep '^alias' | grep -E '#' | cat .bash_aliases | grep '^alias' | cut -d' ' -f2- | grep -E '#' | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s: | grep " # alias - Show all aliases TODO
+alias alias-viewcmd="" # alias - Show cmd for an alias
+#cat .bash_aliases | grep "^alias" | sort
+
+
+
+###############################################################
+#BASH related                                           
+###############################################################
+
+
 # Search command line history
 alias h="history | grep -i"
 alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" #Most used cmd
 alias hh="history | head -35" #Return last 35 cmd run
 alias hs='history | grep -i $1'
 alias lspath='echo -e ${PATH//:/\\n}' #List paths
-alias realias='source ~/.bash_aliases'
-alias reload='source $HOME/.bashrc'
-alias showalias='cat $HOME/.bash_alias'
+alias reload='source $HOME/.bashrc'     # Reload bashrc 
+
 
 #Simple args
 #alias cp="cp -iv"      # interactive, verbose
@@ -144,7 +183,7 @@ alias cls='clear;ls'
 alias gs='git status'
 alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias ga='git add'
-alias gc='git commit'
+alias gc='git commit -ma'
 alias gu='git up'
 alias gp='git push'
 alias gd='git diff'
@@ -304,30 +343,69 @@ md5check() { md5sum "$1" | grep "$2";} #md5check [file] [key]
 
 
 
-###################
-# TMUX            #
-###################
-#Get info
-alias tmuxs="tmux display-message -p '#S'" # tmux current session name
-alias tmuxt="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux terminal attatched to session
-alias tmuxw="tmux display-message -p '#W'" # tmux current window name
-alias tmuxlw="tmux list-windows" # tmux list current sessions windows
-# tmux display -pt "${TMUX_PANE:?}" '#{pane_index}' # tmux list sessions.windows.panes
+###############################
+# TMUX            
+###############################
+
+#######################
+# Get information
+#######################
+
+###############
+# Get session info
+###############
+alias tmuxs="tmux display-message -p '#S'" # tmux - current session name
+alias tmuxta="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux - list all terminals attatched to tmux server
+alias tmuxls="tmux ls" # tmux - list all sessions
+
+###############
+# Get window info
+###############
+alias tmuxt="" # tmux - list terminals attached to current window
+alias tmuxw="tmux display-message -p '#W'" # tmux - display current window name
+
+alias tmuxlw="tmux list-windows -a" # tmux - list windows for all sessions
+alias tmuxlcw="tmux list-windows" # tmux - list current sessions windows
+
+###############
+# Get pane info
+###############
+
+alias tmuxlcp="tmux list-panes -s -F '#{session_name}.#{window_name}:#{pane_title} ' -t $(tmuxs)" # tmux - list panes and windows in current session
+alias tmuxlp="tmux list-panes -s -F '#{session_name}.#{window_name}:#{pane_title} ' -a" # tmux - list panes and windows in all sessions
+
+
+#######################
+# Set configuration
+#######################
+
+# tmux display -pt "${TMUX_PANE:?}" '#{pane_index}' # tmux - list sessions.windows.panes
 # I=$(tmux list-panes -a | grep $TMUX_PANE 2>/dev/null | awk -F: '{print $2}' | awk -F. '{print $2}') # Get current pane number
 
-
+###############
 #Rename
-alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux rename current session
-alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux rename current window
-alias tmuxrp="tmux select-pane -t $( tmux display -pt "${TMUX_PANE:?}" '#{pane_index}') -T " tmux rename current panel
+###############
 
+alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux - rename current session
+alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - rename current window
+alias tmuxrp="tmux select-pane -t $( tmux display -pt "${TMUX_PANE:?}" '#{pane_index}') -T " #tmux - rename current panel
+
+###############
 #Create
+###############
 
+###############
 #Close/kill
+###############
+alias tmuxk="tmux kill-session -t " # tmux - kill session name
 
+#https://gist.github.com/MohamedAlaa/2961058
+alias tmuxkillall="tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill" # tmux - kill all your tmux sessions !
+
+###############
 #Connect
+###############
 
-alias tmuxk="tmux kill-session -t " #tmux kill session name
 
 # TODO
 #tmux list sessions and prompt selection
@@ -335,25 +413,8 @@ alias tmuxk="tmux kill-session -t " #tmux kill session name
 # TMUX DEFAULT CONF WINDOWS
 # https://stackoverflow.com/questions/5609192/how-to-set-up-tmux-so-that-it-starts-up-with-specified-windows-opened
 
-#https://gist.github.com/MohamedAlaa/2961058
-tmuxkillall="tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, length($1)-1)}' | xargs kill" # Kill all your tmux sessions !
 
-###########
-# SSH     #
-###########
 
-#TODO
-#CHECK IF IN TMUX
-#UPDATE WINDOWN NAME BEFORE CONNECTION
-#RETURN WINDOWN NAME AFTER CONNECTION
-
-###########
-# SU      #
-###########
-#TODO
-#CHECK IF IN TMUX
-#UPDATE WINDOWN NAME BEFORE SU
-#RETURN WINDOWN NAME AFTER SU
 
 
 ###############################################################

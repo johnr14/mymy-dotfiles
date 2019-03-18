@@ -11,14 +11,17 @@ I moved over to tmux for a simple reason, it supports striked text.
 
 ## NOTE :
 This is a work in progress, there are many places that need some tweeking.
-Use as reference.
+Use as reference. Some few nice hacks may be found here. I try to mark the url from where I took inspiration. Might have missed a few credits, the rest is my humble bash hacking.
 
 
 ### WARNING ! DO THIS IN A NEW USER TO TEST IT OUT BEFORE !!!
+Remember, this is my backup for my work in progress changes to those files. It may brake at some point.
 To clone those files : 
 ```bash
 rm .bashrc .bash_aliases .bash_logout .profile .screenrc .tmux.conf .tmux.remote .tmux.renew.sh .vimrc
 git init
 git remote add origin https://github.com/johnr14/mymy-dotfiles.git
-git pull origin master```
+git pull origin master
+
+
 

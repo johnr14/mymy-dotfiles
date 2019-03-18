@@ -11,9 +11,20 @@
 # Fix completition
 # Update terminal name with user@host%APP running
 # Time all command run
+#
+# Personal notes for github
+# If README.md was updated on github : 
+#   git pull origin master
+# Push changes to github
+#   git push origin master
 # 
 # LOG ROOT cmd https://unix.stackexchange.com/questions/257303/confirmation-before-sudo-su/257309
 # readonly PROMPT_COMMAND='history -a >(logger -t "commandlog $USER[$PWD] $SSH_CONNECTION")' 
+###############################################################################
+
+
+###############################################################################
+# General configuration
 ###############################################################################
 
 # If not running interactively, don't do anything
@@ -52,11 +63,8 @@ fi
 #######################
 
 export LANG=en_US.UTF-8
-if [ "$TERM" == "rxvt-unicode-256color" ]; then
-    export TERM=rxvt-256color
-else
-     export TERM=xterm-color
-fi
+
+
 
 #######################
 # Set terminal
@@ -67,6 +75,15 @@ shopt -s checkwinsize
 
 # Allow ctrl-S for history navigation (with ctrl-R)
 stty -ixon
+
+
+
+#######################
+# Set defaults
+#######################
+
+# Set the default editor to vim.
+export EDITOR=vim
 
 #######################
 # Set autocomplete
@@ -80,10 +97,54 @@ if [[ $iatest > 0 ]]; then bind "set completion-ignore-case on"; fi
 # Show auto-completion list automatically, without double tab
 if [[ $iatest > 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+
+
+#######################
+# Set path
+#######################
+
+
+#######################
+# Colors
+#######################
+
+# Is this still needed ?
+if [ "$TERM" == "rxvt-unicode-256color" ]; then
+    export TERM=rxvt-256color
+else
+     export TERM=xterm-color
+fi
+
+#Force color
+case "$TERM" in
+    xterm)
+        color_prompt=yes
+        ;;
+    xterm-colors)
+        color_prompt=yes
+        ;;
+    screen)
+        color_prompt=yes
+        ;;
+    *256*) 
+        color_prompt=yes
+        ;;
+esac
+
 # To have colors for ls and all grep commands such as grep, egrep and zgrep
 export CLICOLOR=1
 export LS_COLORS='no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:*.xml=00;31:'
 
+#######################
+# Misc
+#######################
 
 # no bell
 set bell-style none
@@ -105,33 +166,19 @@ if (( $EUID == 0 )); then
 fi
 
 
-###############
-# SSH
-###############
+#################
+# SSH idle logout
+#################
+
+# Only log out if attached to a tmux or screen
+# TODO
 
 
-###############
-# TMUX
-###############
-
-#Automatically attach to tmux
-#if [ -z "$TMUX" ]; then
-#    tmux attach -t Default || tmux new -s Default
-#fi
 
 
-#Force color
-case "$TERM" in
-    xterm)
-        color_prompt=yes
-        ;;
-    screen)
-        color_prompt=yes
-        ;;
-    *256*) 
-        color_prompt=yes
-        ;;
-esac
+
+
+
 
 
 
@@ -144,33 +191,21 @@ export HISTSIZE=100000 # big big history
 export HISTFILESIZE=1000000 # big big history
 export HISTTIMEFORMAT="%d/%m/%y %T " #Timestamp the bash history
 
-#export HISTCONTROL="erasedups:ignoreboth" #Stop bash from caching duplicate lines.
-#export HISTIGNORE="&:[ ]*:exit" #Remove from history
+export HISTCONTROL="erasedups:ignoreboth" #Stop bash from caching duplicate lines.
+export HISTIGNORE="&:[ ]*:exit" #Remove from history
 shopt -s histappend                      # append to history, don't overwrite it
-shopt -s checkwinsize                    # Check the window size after each command and, if necessary, update the values of LINES and COLUMNS
 shopt -s cmdhist                         #This lets you save multi-line commands to the history as one command.
 shopt -s histverify                      # Show expanded history before running it.
-#PROMPT_COMMAND='history -a; history -c; history -r; ssh_ip=`echo $SSH_CLIENT|awk "{print \\\$1}"`; echo "#command above was run from PPID $PPID, IP $ssh_ip" >>~/.bash_history'
+
 PROMPT_COMMAND='history -a; history -c; history -r;'
 
-# Allow ctrl-S for history navigation (with ctrl-R)
-stty -ixon
 
 
-# Disable the bell
-#if [[ $iatest > 0 ]]; then bind "set bell-style visible"; fi
+###############
+# TMUX
+###############
 
 
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-fi
-
-
-# Set the default editor to vim.
-export EDITOR=vim
 
 
 #############################
@@ -210,9 +245,20 @@ else
 fi
 }
 
+# TODO Log cmd run from ssh differently
 
+#PROMPT_COMMAND='history -a; history -c; history -r; ssh_ip=`echo $SSH_CLIENT|awk "{print \\\$1}"`; echo "#command above was run from PPID $PPID, IP $ssh_ip" >>~/.bash_history'
 
+#######
+# SSH
+#######
 
+# TODO
+
+#Automatically attach to tmux if login from ssh 
+#if [ -z "$TMUX" ]; then
+#    tmux attach -t Default || tmux new -s Default
+#fi
 
 
 ###############
@@ -246,9 +292,6 @@ function exitstatus {
     PS2="${BOLD}>${OFF} "
 }
 
-#######################
-# COMPLETITION
-#######################
 
 
 
@@ -317,6 +360,10 @@ else
     fi
 fi
 
+
+###############################################################################
+# Prompt
+###############################################################################
 
 ###############
 # Prompt build
