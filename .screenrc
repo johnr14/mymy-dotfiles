@@ -1,1 +1,54 @@
-../../.screenrc
+# Enable mouse scrolling and scroll bar history scrolling
+# https://unix.stackexchange.com/questions/40242/scroll-inside-screen-or-pause-output
+#termcapinfo xterm* ti@:te@
+
+startup_message off # skip splash screen
+#
+
+# https://gist.github.com/ChrisWills/1337178
+# Allow bold colors - necessary for some reason
+attrcolor b ".I"
+
+attrcolor i "+b"
+attrcolor b ".I"    # allow bold colors - necessary for some reason
+
+
+
+# Tell screen how to set colors. AB = background, AF=foreground
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+# Enables use of shift-PgUp and shift-PgDn
+
+#termcapinfo xterm|xterms|xs|rxvt ti@:te@
+# Erase background with current bg color
+defbce "on"
+#
+# # Enable 256 color term
+term xterm-256color
+#
+# # Cache 30000 lines for scroll back
+defscrollback 30000
+#
+# # New mail notification
+# backtick 101 30 15 $HOME/bin/mailstatus.sh
+#
+ hardstatus alwayslastline 
+# # Very nice tabbed colored hardstatus line
+# hardstatus string '%{= Kd} %{= Kd}%-w%{= Kr}[%{= KW}%n %t%{= Kr}]%{= Kd}%+w %-= %{KG} %H%{KW}|%{KY}%101`%{KW}|%D %M %d %Y%{= Kc} %C%A%{-}'
+#
+# # change command character from ctrl-a to ctrl-b (emacs users may want this)
+#escape ^Bb
+#
+# # Hide hardstatus: ctrl-a f 
+bind f eval "hardstatus ignore"
+# # Show hardstatus: ctrl-a F
+bind F eval "hardstatus alwayslastline"
+
+
+
+
+# https://stackoverflow.com/questions/2187829/constantly-updated-clock-in-zsh-prompt
+#hardstatus alwayslastline
+#hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{=kw}%?%-Lw%?%{r}(%{W}%n* %f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B}%Y-%m-%d %{W}%c %{g}]'
+# Default screens
+# screen -t shell1        0
+# screen -t shell2        1
