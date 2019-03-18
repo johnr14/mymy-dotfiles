@@ -388,7 +388,7 @@ alias tmuxlp="tmux list-panes -s -F '#{session_name}.#{window_name}:#{pane_title
 
 alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux - rename current session
 alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - rename current window
-alias tmuxrp="tmux select-pane -t $( tmux display -pt "${TMUX_PANE:?}" '#{pane_index}') -T " #tmux - rename current panel
+alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " #tmux - rename current panel
 
 ###############
 #Create
