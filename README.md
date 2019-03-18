@@ -16,8 +16,8 @@ Use as reference.
 
 WARNING ! DO THIS IN A NEW USER TO TEST IT OUT BEFORE !!!
 To clone those files : 
-rm .bashrc .bash_aliases .bash_logout .profile .screenrc .tmux.conf .tmux.remote .tmux.renew.sh .vimrc
+`rm .bashrc .bash_aliases .bash_logout .profile .screenrc .tmux.conf .tmux.remote .tmux.renew.sh .vimrc
 git init
 git remote add origin https://github.com/johnr14/mymy-dotfiles.git
-git pull origin master
+git pull origin master`
 
