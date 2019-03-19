@@ -64,15 +64,25 @@ alias alias-viewcmd="" # alias - Show cmd for an alias
 #BASH related                                           
 ###############################################################
 
-
 # Search command line history
 alias h="history | grep -i"
 alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" #Most used cmd
-alias hh="history | head -35" #Return last 35 cmd run
-alias hs='history | grep -i $1'
+alias hh="history | tail -35" #Return last 35 cmd run
+alias hs='history | grep -i '
 alias lspath='echo -e ${PATH//:/\\n}' #List paths
 alias reload='source $HOME/.bashrc'     # Reload bashrc 
 
+
+alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
+
+
+###############################
+# Sudo and su
+###############################
+
+alias sudo="sudo -E " # sudo - pass environment variables when doing a sudo, usefull for $SSH_CLIENT and $TMUX for example
+alias su="su -p " # su - pass environment variables when doing a su, usefull for $SSH_CLIENT and $TMUX for example
+# 
 
 #Simple args
 #alias cp="cp -iv"      # interactive, verbose
@@ -347,6 +357,9 @@ md5check() { md5sum "$1" | grep "$2";} #md5check [file] [key]
 # TMUX            
 ###############################
 
+# If tmux is not accessible, line in a sudo, you may get errors trying to parse those aliases
+if [ -n "$TMUX" ]; then
+
 #######################
 # Get information
 #######################
@@ -371,8 +384,10 @@ alias tmuxlcw="tmux list-windows" # tmux - list current sessions windows
 # Get pane info
 ###############
 
-alias tmuxlcp="tmux list-panes -s -F '#{session_name}.#{window_name}:#{pane_title} ' -t $(tmuxs)" # tmux - list panes and windows in current session
-alias tmuxlp="tmux list-panes -s -F '#{session_name}.#{window_name}:#{pane_title} ' -a" # tmux - list panes and windows in all sessions
+alias tmuxlcp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title}' -t $(tmux display-message -p '#S')" # tmux - list panes and windows in current session
+alias tmuxlp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title}' -a" # tmux - list panes and windows in all sessions
+alias tmuxcp="tmux display -pt "${TMUX_PANE:?}" '#{pane_title}'" # tmux - current pane name
+alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}:#{pane_title}'" # tmux - current session.window:pane names
 
 
 #######################
@@ -415,6 +430,7 @@ alias tmuxkillall="tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, le
 
 
 
+fi # End $TMUX if
 
 
 ###############################################################

@@ -37,7 +37,7 @@ esac
 # First run check
 #############################
 
-#Test if file .bashrc-mymybash exist
+#Test if folder .mymybash exist
 # If not exist :
 #   install needed applications
 #       dfc htop pv git screen tmux xclip net-tools
@@ -159,11 +159,12 @@ set bell-style none
 ###############
 # Safety policy !
 # Never leave idle root login open !
+# However, if you are in nested bash->bash->bash, it will not work
 if (( $EUID == 0 )); then
     # set a 5 min timeout policy for bash shell
     TMOUT=300
-    readonly TMOUT
-    export TMOUT
+    readonly TMOUT 2> /dev/null 
+    export TMOUT 2> /dev/null 
 fi
 
 
@@ -189,18 +190,37 @@ fi
 
 # Keep 1000 lines in .bash_history (default is 500)
 export HISTSIZE=100000 # big big history
-export HISTFILESIZE=1000000 # big big history
-export HISTTIMEFORMAT="%d/%m/%y %T " #Timestamp the bash history
+export HISTFILESIZE=1000000 # big big history filesize
 
 export HISTCONTROL="erasedups:ignoreboth" #Stop bash from caching duplicate lines.
 export HISTIGNORE="&:[ ]*:exit" #Remove from history
+
 shopt -s histappend                      # append to history, don't overwrite it
 shopt -s cmdhist                         #This lets you save multi-line commands to the history as one command.
 shopt -s histverify                      # Show expanded history before running it.
 
+HISTFILE="$HOME/.bash_history"
+
+if [ "$(id -u)" -ne 0 ]; then 
+    if [ -n "$TMUX" ]; then
+        #HISTFILE=~/.history/history.$$
+        echo ""
+    elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        REMOTEIP=$(echo $SSH_CLIENT | awk '{print $1}')
+    fi
+   # export PROMPT_COMMAND=' history -a; history -c; history -r; echo "$HOSTNAME $UNIQTTY $(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.mymybash/bash-history-merged.log; fi'
+else
+    #HISTFILE=~/.history/history.$$
+   # export PROMPT_COMMAND='history -a; history -c; history -r;'
+   echo ""
+fi
+#export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
 PROMPT_COMMAND='history -a; history -c; history -r;'
 
 
+#https://askubuntu.com/questions/59846/bash-history-search-partial-up-arrow
+#bind '"\e[A": history-search-backward' 
+#bind '"\e[B": history-search-forward'
 
 ###############
 # TMUX
