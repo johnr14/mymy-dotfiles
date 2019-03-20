@@ -79,12 +79,12 @@ LIGHTNING_BOLT="⚡"
 alias alias-less='cat $HOME/.bash_aliases | grep "^alias" | less -R' # Show alias
 alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
 alias alias-reload="source ~/.bash_aliases"  # alias - Reload only aliases
-alias alias-search="cat .bash_aliases | grep '^alias' | grep -E '#' | cat .bash_aliases | grep '^alias' | cut -d' ' -f2- | grep -E '#' | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s: | grep " # alias - Show all aliases TODO
+alias alias-search='__aliassearch' # Search for alias by keyword
 alias alias-viewcmd="" # alias - Show cmd for an alias
 #cat .bash_aliases | grep "^alias" | sort
 
-#FIXME ?
-alias aliassearch='__aliassearch' # Search for alias by keyword
+
+
 
 #######################################
 # BACKUP RELATED
@@ -219,7 +219,7 @@ alias 777='chmod --preserve-root -R 777' # TODO
 
 # Counting
 alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null" # Count all files (recursively) in the current folder
-
+alias dirsize="du -shx * .[a-zA-Z0-9_]* 2> /dev/null"
 
 # Directories
 alias cdls='__cdls' # perform 'ls' after 'cd' if successful.
@@ -251,14 +251,14 @@ alias llt="ls -thor --time-style='+%d %b %Y %H:%M' | head " # List most recent f
 alias llta="ls -thor --time-style='+%d %b %Y %H:%M'" # List files ordered with most recent on top
 
 # Listing files sorted
-alias lsx='ls -lXBh' # sort by extension
-alias lsk='ls -lSrh' # sort by size
-alias lsc='ls -lcrh' # sort by change time
-alias lsu='ls -lurh' # sort by access time
-alias lst='ls -ltrh' # sort by date
+alias lsx='ls -lXBh' # ls - sort by extension
+alias lsk='ls -lSrh' # ls - sort by size
+alias lsc='ls -lcrh' # ls - sort by change time
+alias lsu='ls -lurh' # ls - sort by access time
+alias lst='ls -ltrh' # ls - sort by date
 
 # Remove empty directories
-alias rmdirempty='find . -type d -empty -delete' # Remove all empty directories recursively
+alias rmdirempty='find . -type d -empty -delete' # find - remove all empty directories recursively
 
 #######################################
 # LANGUAGE
@@ -303,7 +303,8 @@ alias wgetlist="wget -ca -e robots=off --no-parent --recursive --mirror -p --con
 #######################################
 # PARSING PIPES 
 #######################################
-alias lessl='__lessl' # A less that scroll to line number #
+alias lessl='__lessl' # less - scroll to line number #
+alias pawk="__pawk" # awk - get a certain column of the output, as in awk '{print $2}' = |pawk 2
 
 #######################################
 # PROCESS RELATED
@@ -333,8 +334,10 @@ alias screenrename='__screenrename' # Rename screen session name, accept: [scree
 #alias screenlaunchdetach='__screenlaunchd' # Start a new screen, start application and detatch
 
 # Am I running on a screen, ssh or tmux session ?
-alias isscreen='__issc' # Check if running from a screen
-alias isssh='__isssh' # Check if curently in a ssh session
+alias isscreen='__issc' # screen - check if running from a screen
+alias isssh='__isssh' # ssh - check if curently in a ssh session
+alias istmux="" # tmux check if curently in a tmux session FIXME
+alias owntmux="" # tmux - do user has a running instance of tmux FIXME
 
 #TODO
 # alias istmux='__istmux' # Check if currently running in a tmux session
@@ -514,9 +517,9 @@ alias shutr='sudo /sbin/shutdown -r now' # shutdown and reboot FIXME
 ###################
 
 #Show who is on
-alias whoison='w -f -i -s'
-alias luser="sudo ps auxwww | grep sshd: | grep -v 'priv\|grep' | awk '{print \$12}' | sort" # List connected users from ssh
-alias lssh="sudo netstat -tnpa | grep ESTABLISHED.*sshd | awk '{gsub(/\/.*/,\" \",\$7); print \$8\" from \"\$5\" \"\$7}'" # List connected uses from ssh with source IP
+alias whoison='w -f -i -s' # who - check who is loggeg in and doing what
+#alias whoisssh="sudo ps auxwww | grep sshd: | grep -v 'priv\|grep' | awk '{print \$12}' | sort" # List connected users from ssh
+alias whoisssh="sudo netstat -tnpa | grep ESTABLISHED.*sshd | awk '{gsub(/\/.*/,\" \",\$7); print \$8\" from \"\$5\" \"\$7}'" # List connected uses from ssh with source IP
 
 
 
@@ -852,7 +855,7 @@ alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}
 
 alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux - rename current session
 alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - rename current window
-alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " #tmux - rename current panel
+alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " # tmux - rename current panel
 
 ###############
 #Create
@@ -888,234 +891,5 @@ fi # End $TMUX if
 alias beep='echo -en "\007"'
 
 
-###############
-# COMPLETIONS #
-###############
-
-shopt -s extglob progcomp cdspell
-
-# Make directory commands see only directories
-complete -d cd mkdir rmdir pushd
-
-# Make file commands see only files
-complete -f cat less more chown ln strip nedit emacs vi vim
-
-complete -f -X '!*.@(zip|ZIP|jar|JAR|exe|EXE|pk3|war|wsz|ear|zargo|xpi)' unzip zipinfo
-complete -f -X '*.Z' compress
-complete -f -X '!*.@(Z|gz|tgz|Gz|dz)' gunzip zcmp zdiff zcat zegrep zfgrep zgrep zless zmore
-complete -f -X '!*.Z' uncompress
-complete -f -X '!*.@(gif|jp?(e)g|tif?(f)|pn[gm]|p[bgp]m|bmp|xpm|ico|xwd|tga|pcx|GIF|JP?(E)G|TIF?(F)|PN[GM]|P[BGP]M|BMP|XPM|ICO|XWD|TGA|PCX)' ee display
-complete -f -X '!*.@(gif|jp?(e)g|tif?(f)|png|p[bgp]m|bmp|x[bp]m|rle|rgb|pcx|fits|pm|GIF|JPG|JP?(E)G|TIF?(F)|PNG|P[BGP]M|BMP|X[BP]M|RLE|RGB|PCX|FITS|PM)' xv qiv
-complete -f -X '!*.@(ps|PS)' gv ggv
-complete -f -X '!*.@(ps|PS|pdf|PDF)' fmerge
-complete -f -X '!*.@(dvi|DVI)?(.@(gz|Z|bz2))' xdvi
-complete -f -X '!*.@(dvi|DVI)' dvips dviselect dvitype
-complete -f -X '!*.@(pdf|PDF)' acroread gpdf xpdf
-complete -f -X '!*.texi*' makeinfo texi2html
-complete -f -X '!*.@(?(la)tex|?(LA)TEX|texi|TEXI|dtx|DTX|ins|INS)' tex latex slitex jadetex pdfjadetex pdftex pdflatex texi2dvi
-complete -f -X '!*.fig' xfig
-complete -f -X '!*.@(?([xX]|[sS])[hH][tT][mM]?([lL]))' netscape mozilla lynx appletviewer hotjava
-complete -f -X '!*.tar' tar
-complete -f -X '!*.java' javac
-complete -f -X '!*.idl' idl idlj
-
-# user commands see only users
-complete -u su usermod userdel passwd write groups w talk
-
-# bg completes with stopped jobs
-complete -A stopped -P '%' bg
-
-# other job commands
-complete -j -P '%' fg jobs disown
-
-# readonly and unset complete with shell variables
-complete -v readonly unset
-
-# set completes with set options
-complete -A setopt set
-
-# shopt completes with shopt options
-complete -A shopt shopt
-
-# unalias completes with aliases
-complete -a unalias
-
-# type and which complete on commands
-complete -c command type which
-
-# complete hostnames
-complete -A hostname ssh telnet rlogin ftp ping traceroute
-
-
-
-###############################################################
-# FUNCTIONS                                                   #
-###############################################################
-
-
-lessl () #Scroll to line
-{
-if [[ $# == 0 ]]; then
-command less -i -x4 -;
-return;
-fi;
-local num=$(sed -n 's,^.*:([0-9]*)$,1,p' <<< "$1");
-local file="${1%:$num}";
-shift;
-if [[ -n $num ]]; then
-command less -i -x4 +${num}g "$file" "$@";
-else
-command less -i -x4 "$file" "$@";
-fi
-}
-
-
-#kill a process by name
-pskill()
-{
-if [ -z $1 ]; then
-echo -e \e[0;31;1mUsage: pskill [processName]\e[m;
-else
-ps -au $USER | grep -i $1 |awk {print kill -9 $1}|sh
-fi
-}
-
-#mkdir and cd combined
-mkcd()
-{
-if [ -z $1 ]; then
-echo -e \e[0;31;1mUsage: mkcd [directory]\e[m;
-else
-if [ -d $1 ]; then
- echo Changed to $1.;
- cd $1;
-else
- mkdir $1;
- echo Created $1;
- cd $1;
-fi;
-fi
-}
-
-# perform 'ls' after 'cd' if successful.
-cdls() {
-  builtin cd "$*"
-  RESULT=$?
-  if [ "$RESULT" -eq 0 ]; then
-    ls
-  fi
-}
-
-#TODO
-#LIST & EXTRACT ##DAR,ZPAQ,XZ ??
-
-ex () {
-  if [ -f $1 ] ; then
-      case $1 in
-          *.tar.bz2)   tar xvjf $1    ;;
-          *.tar.gz)    tar xvzf $1    ;;
-          *.bz2)       bunzip2 $1     ;;
-          *.rar)       unrar x $1     ;;
-          *.gz)        gunzip $1      ;;
-          *.tar)       tar xvf $1     ;;
-          *.tbz2)      tar xvjf $1    ;;
-          *.tgz)       tar xvzf $1    ;;
-          *.zip)       unzip $1       ;;
-          *.Z)         uncompress $1  ;;
-          *.7z)        7z x $1        ;;
-          *.exe)       cabextract $1  ;;
-          *)           echo "'$1': unrecognized file compression" ;;
-      esac
-  else
-      echo "'$1' is not a valid file"
-  fi
-}
-
-#TO FIX
-#https://www.idnt.net/en-GB/kb/941772
-#
-#alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.01f\n\", \$1)}'"
-
-# Searches for text in all files in the current folder
-ftext ()
-{
-	# -i case-insensitive
-	# -I ignore binary files
-	# -H causes filename to be printed
-	# -r recursive search
-	# -n causes line number to be printed
-	# optional: -F treat search term as a literal, not a regular expression
-	# optional: -l only print filenames and not the matching lines ex. grep -irl "$1" *
-	grep -iIHrn --color=always "$1" . | less -r
-}
-
-# Copy file with a progress bar
-#copy()
-#{
-#	set -e
-#	strace -q -ewrite cp -- "${1}" "${2}" 2>&1 \
-#	| awk '{
-#	count += $NF
-#	if (count % 10 == 0) {
-#		percent = count / total_size * 100
-#		printf "%3d%% [", percent
-#		for (i=0;i<=percent;i++)
-#			printf "="
-#			printf ">"
-#			for (i=percent;i<100;i++)
-#				printf " "
-#				printf "]\r"
-#			}
-#		}
-#	END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
-#}
-
-# Show current network information
-netinfo ()
-{
-	echo "--------------- Network Information ---------------"
-	/sbin/ifconfig | awk /'inet addr/ {print $2}'
-	echo ""
-	/sbin/ifconfig | awk /'Bcast/ {print $3}'
-	echo ""
-	/sbin/ifconfig | awk /'inet addr/ {print $4}'
-
-	/sbin/ifconfig | awk /'HWaddr/ {print $4,$5}'
-	echo "---------------------------------------------------"
-}
-
-# IP address lookup
-alias whatismyip="whatsmyip"
-function whatsmyip ()
-{
-	# Dumps a list of all IP addresses for every device
-	# /sbin/ifconfig |grep -B1 "inet addr" |awk '{ if ( $1 == "inet" ) { print $2 } else if ( $2 == "Link" ) { printf "%s:" ,$1 } }' |awk -F: '{ print $1 ": " $3 }';
-
-	# Internal IP Lookup
-	echo -n "Internal IP: " ; /sbin/ifconfig eth0 | grep "inet addr" | awk -F: '{print $2}' | awk '{print $1}'
-
-	# External IP Lookup
-	echo -n "External IP: " ; wget http://smart-ip.net/myip -O - -q
-}
-
-#get a certain column of the output, as in df -h | awk '{print $2}' = df -h|fawk 2
-
-function fawk {
-    first="awk '{print "
-    last="}'"
-    cmd="${first}\$${1}${last}"
-    eval $cmd
-}
-
-
-#dirsize - finds directory sizes and lists them for the current directory
-dirsize ()
-{
-du -shx * .[a-zA-Z0-9_]* 2> /dev/null | \
-egrep '^ *[0-9.]*[MG]' | sort -n > ~/listdufolderlist.tmp
-egrep '^ *[0-9.]*M' ~/listdufolderlist.tmp
-egrep '^ *[0-9.]*G' ~/listdufolderlist.tmp
-rm -rf ~/listdufolderlist.tmp
-}
 
 
