@@ -14,13 +14,28 @@
 # 8  Tiny  sub-section
 ###############################################################################
 
+###############################################################################
+# This is GPL 3.0 
+# Any suggestions welcomed !
+# 
+# There are quite a few TODO & FIXME
+# - Make it more portable for other BSDs
+# Once you have lots of alias, searching them with the command
+# aliassearch KEYWORD will return matching results for alias
+# ffnd KEYWORD will return matching results for functions
+# afnd KEYWORD will return matching results for alias and functions
+#   That's why comments are on the same line, to be easily parsed
+#   And it's required that a # comment is on every alias for easy description
+#
+###############################################################################
+
 #
 # cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -v "#" | sed -e 's/\=.*\#/ =/'| sort
 # cat .bash_aliases | grep "^alias" | grep -E "#" | cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -E "#" | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s:
 #
 
-################$###############################################
-# Colors
+################################################################
+# Colors & symbols
 ################################################################
 # not searchable
 
@@ -46,35 +61,468 @@ NC='\[\e[0m\]' # No Color
 OFF="\[\033[m\]"
 
 
+#Symbols
+LIGHTNING_BOLT="⚡"
+      UP_ARROW="↑"
+    DOWN_ARROW="↓"
+      UD_ARROW="↕"
+      FF_ARROW="→"
+       RECYCLE="♺"
+        MIDDOT="•"
+     PLUSMINUS="±"
+
 ###############################################################
 # Alias helper                                          
 ###############################################################
 
 
-
+alias alias-less='cat $HOME/.bash_aliases | grep "^alias" | less -R' # Show alias
 alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
 alias alias-reload="source ~/.bash_aliases"  # alias - Reload only aliases
 alias alias-search="cat .bash_aliases | grep '^alias' | grep -E '#' | cat .bash_aliases | grep '^alias' | cut -d' ' -f2- | grep -E '#' | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s: | grep " # alias - Show all aliases TODO
 alias alias-viewcmd="" # alias - Show cmd for an alias
 #cat .bash_aliases | grep "^alias" | sort
 
+#FIXME ?
+alias aliassearch='__aliassearch' # Search for alias by keyword
 
+#######################################
+# BACKUP RELATED
+#######################################
+
+#alias bkbash='__bkbash' # Backup bash configuration files
+
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 ###############################################################
-#BASH related                                           
+# Bash related                                           
 ###############################################################
 
-# Search command line history
+###############################
+# History                     
+###############################
 alias h="history | grep -i"
-alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" #Most used cmd
-alias hh="history | tail -35" #Return last 35 cmd run
-alias hs='history | grep -i '
-alias lspath='echo -e ${PATH//:/\\n}' #List paths
-alias reload='source $HOME/.bashrc'     # Reload bashrc 
+alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" # History - most used cmd
+alias hh="history | tail -35" # history - return last 35 cmd run
+#alias hs='history | grep -i ' # 
+alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr" # history - shows most 
 
+###############################
+# Misc                        
+###############################
+
+#FIXME BETTER CLASSIFICATION PLS
+
+alias beep='echo -en "\007"' # Beep
+alias chkcmd="type -t" # Check to see if a command is aliased, a file, or a built-in command
+alias colorslist="set | egrep 'COLOR_\w*'" # Lists all the used colors
+alias exit='clear; exit'
+alias lspath='echo -e ${PATH//:/\\n}' # List paths in $PATH
+alias reload='source $HOME/.bashrc'     # Reload bashrc 
+alias less='less -R'
 
 alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
 alias ttyc="tty | sed -e 's/\/dev\/\(pts\|tty\)\///' | sed -e 's/\/dev\///'" # tty - get current tty number, works in direct terminal or ssh
+
+
+#Screen related
+alias c='clear' # Clear the screen
+alias cla='clear; la' # Clear screen and list all
+alias cld='clear; lsd' # Clear screen and list directories
+alias cls='clear; ls' # Clear screen and list
+
+#Terminal related
+alias fix='echo -e "\033c"' # Fix terminal when weird caracters replaced prompt; after cat a binary file
+
+#######################################
+# CHECKSUM SHA AND MD5
+#######################################
+
+#FIXME pipe data?
+alias opensslsha1="openssl dgst -sha1" # openssl dgst -sha1
+alias opensslsha2="openssl dgst -sha256" # openssl dgst -sha256
+alias opensslsha512="openssl dgst -sha512" # openssl dgst -sha512
+alias opensslb64="openssl enc -base64" # openssl enc -base64
+
+#######################################
+# CODING RELATED
+#######################################
+
+#Compilling FIXME more optimisation fox avx ?
+alias compc="gcc -o exe -O3 -lm -W -Wall -Wuninitialized -fbounds-check "
+
+#Git #FIXME probably more complete/useful versions?
+alias gs='git status' # Git status
+alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" # Git log 
+alias ga='git add' # Git add
+alias gc='git commit -am' # Git commit
+alias gu='git up' # Git up
+alias gp='git push' # Git push
+alias gd='git diff' # Git diff 
+alias gb='git branch' # Git branch
+alias gup='gu && gp' # Git up and git push
+alias gcup='gc && gup' # Git commit and git up and push
+
+#######################################
+# COLORIZE
+#######################################
+
+# Colorize the grep command output for ease of use (good for log files)##
+alias grep='grep --color=auto -i'   # Colorized grep
+alias egrep='egrep --color=auto -i' # Colorized egrep
+alias fgrep='fgrep --color=auto -i' # Colorized fgrep
+
+# Install  colordiff package :)
+alias diff='colordiff' # Colorized diff
+
+#######################################
+# COMPRESSION AND DECOMPRESSION
+#######################################
+
+# Compressed files
+alias ex='__ex' # Extract compressed file by matching extension
+
+#######################################
+# DESKTOP RELATED
+#######################################
+
+# valid .Xauthority
+
+
+#######################################
+# FILES AND DIRECTORIES
+#######################################
+
+# Bash Directory Bookmarks http://www.huyng.com/posts/quick-bash-tip-directory-bookmarks/
+alias m1='alias g1="cd `pwd`"' # Bookmark curent directorie to g1
+alias m2='alias g2="cd `pwd`"' # Bookmark curent directorie to g2
+alias m3='alias g3="cd `pwd`"' # Bookmark curent directorie to g3
+alias m4='alias g4="cd `pwd`"' # Bookmark curent directorie to g4
+alias m5='alias g5="cd `pwd`"' # Bookmark curent directorie to g5
+alias m6='alias g6="cd `pwd`"' # Bookmark curent directorie to g6
+alias m7='alias g7="cd `pwd`"' # Bookmark curent directorie to g7
+alias m8='alias g8="cd `pwd`"' # Bookmark curent directorie to g8
+alias m9='alias g9="cd `pwd`"' # Bookmark curent directorie to g9
+alias mdump='alias|grep -e "alias g[0-9]"|grep -v "alias m" > ~/.bash_ohmy_bookmarks'   # Save bookmarked directories alias (g1-g9)
+alias mls='alias | grep -e "alias g[0-9]"|grep -v "alias m"|sed "s/alias //"' # List directories bookmark alias (g1-g9)
+touch ~/.bash_mymy_bookmarks && source ~/.bash_mymy_bookmarks
+
+# Chmod files #FIXME more modes?
+alias ax="chmod --preserve-root a+x" # make executable
+alias or="chmod --preserve-root o+r" # make readable by all
+alias ux="chmod --preserve-root u+x" # make user executable
+alias 000='chmod --preserve-root -R 000' # TODO
+alias 644='chmod --preserve-root -R 644' # TODO
+alias 666='chmod --preserve-root -R 666' # TODO
+alias 755='chmod --preserve-root -R 755' # TODO
+alias 777='chmod --preserve-root -R 777' # TODO
+
+# Counting
+alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null" # Count all files (recursively) in the current folder
+
+
+# Directories
+alias cdls='__cdls' # perform 'ls' after 'cd' if successful.
+alias mkcd='__mkcd' # mkdir and cd combined
+alias ..="cd .." # cd ..
+alias ...="cd ../.." # cd ../..
+alias ....="cd ../../.." # cd ../../..
+alias .....="cd ../../../.." # cd ../../../..
+
+#https://gist.github.com/zachbrowne/8bc414c9f30192067831fafebd14255c
+alias folders='du -h --max-depth=1' # Show directories size
+alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn' # Show directories size ordered by size
+alias tree='tree -CAhF --dirsfirst' # Show recursive structure with file
+alias treed='tree -CAFd' # Show recursive directory structure
+
+# Find files
+alias ff="find . -name " # Find file by name
+alias bigfiles='find -type f -printf "%s %p\n" . | sort -nr | head -n 40 | numfmt --field=1 --to=iec-i' # Find biggest 40 files recursively with size
+
+# Listing files and directories
+alias ll='ls -F --color --time-style="+%d %b %Y %H:%M"' # List long
+alias ls='ls -lacf --color' # List files in colors
+alias lls='ls -lacF' # List files in colors, directories end with /
+alias la="ls --color -lAGbhF --time-style='+%d %b %Y %H:%M'  --group-directories-first" # List all
+alias lx="ls --color -lGbhFXB --time-style='+%d %b %Y %H:%M' | grep -v /" # List files by extensions
+alias lf="ls --color -lGbhF --time-style='+%d %b %Y %H:%M' | grep -v /" # List files by filename
+alias lsd="ls -ld --color -tolAGbhF --time-style='+%d %b %Y %H:%M' */" # List directories only
+alias llt="ls -thor --time-style='+%d %b %Y %H:%M' | head " # List most recent file changed
+alias llta="ls -thor --time-style='+%d %b %Y %H:%M'" # List files ordered with most recent on top
+
+# Listing files sorted
+alias lsx='ls -lXBh' # sort by extension
+alias lsk='ls -lSrh' # sort by size
+alias lsc='ls -lcrh' # sort by change time
+alias lsu='ls -lurh' # sort by access time
+alias lst='ls -ltrh' # sort by date
+
+# Remove empty directories
+alias rmdirempty='find . -type d -empty -delete' # Remove all empty directories recursively
+
+#######################################
+# LANGUAGE
+#######################################
+
+#MORE ??
+alias orthographe="aspell -t check --lang=fr "
+alias spellcheck="aspell -t check --lang=en "
+
+#######################################
+# MOUNTS AND SPACE
+#######################################
+
+alias dfc='dfc -W -d -s -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs 2>/dev/null' # Show colorized mounts of real filesystems with bars
+alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" # Show mounts only
+
+#SSH MOUNTS
+#alias sshmounts=
+
+
+#######################################
+# MOVING FILES AND DIRECTORIES 
+#######################################
+
+alias copy='__copy()' # Copy file with a progress bar
+
+#######################################
+# NETWORKING
+#######################################
+
+alias ping='ping -c 5 ' # ping -c 5
+
+#Debug http
+debug_http () { curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n" ; } # WARN:TOCHECK debug_http: download a web page and show info on what took time
+http_headers () { curl -I -L $@ ; } # WARN:TOCHECK http_headers: get just the HTTP headers from a web page (and its redirects)
+
+#Downloading
+alias wget='wget -c' # wget -c for resuming
+alias wgetlist="wget -ca -e robots=off --no-parent --recursive --mirror -p --convert-links --wait=5 -A html --cut-dirs=1 --user-agent=Mozilla/5.0 -P wgets/ -i  " # WARN:TOCHECK Parse $1 file as http files to download and save to wgets directory 
+
+
+#######################################
+# PARSING PIPES 
+#######################################
+alias lessl='__lessl' # A less that scroll to line number #
+
+#######################################
+# PROCESS RELATED
+#######################################
+
+#TODO More jobs
+alias j='jobs -l' # Current running jobs
+
+alias p="ps aux | grep " # ps aux | grep 
+alias psn='ps aux | tail -n +2 | wc -l' # Total number of processes running
+alias psu='ps -fHU $USER' # ps for current user
+
+alias pskill='__pskill' # Kill a process by name
+
+#TODO NICE
+
+#######################################
+# SCREEN, SSH & TMUX RELATED
+#######################################
+
+# SCREENS
+alias screens='screen -list' # List screen
+alias screenconnect='__screenconnect' # Connect to screen #n or PID.NAME
+alias screenrename='__screenrename' # Rename screen session name, accept: [screen# | screensession | empty ] newname
+
+#alias screenlaunch='__screenlaunch' # Start a new screen and start application
+#alias screenlaunchdetach='__screenlaunchd' # Start a new screen, start application and detatch
+
+# Am I running on a screen, ssh or tmux session ?
+alias isscreen='__issc' # Check if running from a screen
+alias isssh='__isssh' # Check if curently in a ssh session
+
+#TODO
+# alias istmux='__istmux' # Check if currently running in a tmux session
+# alias iswhat # Draw tree of parent process
+
+#alias scw='__scw' # Find what screens are doing
+#alias tmuxw='__tmuxw' # Find what tmux are doing
+
+# Where do I have active ssh connections to 
+# alias sshwhere='__sshwhere' # Where do I have active ssh connections
+# alias sshwhat='__sshwhat' # What is running on my ssh connections
+
+#SSH 
+alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client originating ip on remote host
+
+
+
+#ps u -p $(ps -el | grep $(ps -el | grep SCREEN_SESSION_PID | grep bash | awk '{print $4}') | grep -v bash | awk '{print $4}')
+
+#
+
+#######################################
+# RANDOM RELATED
+######################################
+alias randpass8='__randpassgen 8' # Generate a random password of size 8
+alias randpass16='__randpassgen 16' # Generate a random password of size 16
+alias randpass32='__randpassgen 32' # Generate a random password of size 32
+alias randpass64='__randpassgen 64' # Generate a random password of size 64
+
+#######################################
+# SEARCH AND FIND
+######################################
+
+alias fgrept='__fgrept' # Searches for text in all files in the current folder recursively
+
+###############################################################################
+# SYS ADMIN RELATED 
+###############################################################################
+
+
+#######################################
+# CONTAINERS AND VMs
+#######################################
+
+#TODO
+
+#Docker
+#LXC
+#Proxmox
+#QEMU
+#VIRTUALBOX
+#VMWARE
+
+#######################################
+# MONITORING
+#######################################
+
+alias logs="find /var/log -type f -exec file {} \; | grep 'text' | cut -d' ' -f1 | sed -e's/:$//g' | grep -v '[0-9]$' | xargs tail -f" # Tail all logs
+alias syslog='sudo tail -100f /var/log/syslog' # View last and tail syslog 
+alias messages='sudo tail -100f /var/log/messages' # View last and tail log messages
+
+alias allcron='for user in $(cut -f1 -d: /etc/passwd); do echo $user; crontab -u $user -l; done' # List all crontab jobs for all users, in sudo !
+
+###################
+# CPU
+###################
+
+alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10' # Find top 10 CPU hogs
+alias pscpu='ps auxf | sort -nr -k 3' # Get top process eating cpu
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10' # Get top 10 process eating cpu
+alias topcpu="ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10" # Show top 10 cpu intensive process
+
+###################
+# DISK
+###################
+
+alias diskwho='sudo iotop' # Show processes reading/writing to disk #TODO BETTER !
+
+###################
+# ENERGY
+###################
+
+alias bat_status='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep  -E "state|to\ full|percentage|time to empty"' # WARN:TOCHECK Status FIXME CHECK IF WORKING
+ 
+alias apcwatt="__apcwatt" # Return watts used on APC connected UPS
+alias apcleft="sudo apcaccess | grep 'TIMELEFT' | awk '{ print $3 }'" # APC UPS time left on battery
+alias apccharge="sudo apcaccess | grep 'BCHARGE' | awk '{ print $3 }'" # APC UPS charge left
+alias apc="sudo apcaccess | grep -E 'MODEL|STATUS|LOADPCT|BCHARGE|TIMELEFT|NOMPOWER'" # Compact APC USP information
+
+###################
+# MEMORY
+###################
+
+# Frees up the cached memory
+alias freemem2='sync && sudo /sbin/sysctl -w vm.drop_caches=3' # Free memory by droping caches 
+alias mem_hogs_top='top -l 1 -o rsize -n 10' # Find memory hogs
+alias mem_hogs_ps='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10' # Find top 10 memory hogs:
+alias psmem='ps auxf | sort -nr -k 4' # Get top process eating memory
+alias psmem10='ps auxf | sort -nr -k 4 | head -10' # Get top 10 process eating memory
+
+###################
+# NETWORKING
+###################
+
+alias flushdns='sudo service nscd restart ' # Flush DNS entries
+
+# IPs and interfaces
+#FIXME alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" # Return public IP
+alias myip='curl ifconfig.co'
+alias mydns="nslookup . ifconfig.co | grep Name | awk '{print \$2}'" # Return public DNS
+alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" # List all interfaces IPs
+alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" # List all interfaces and their IPs
+alias netinfo='__netinfo' # Show current network information
+alias whatsmyip='__whatsmyip' # IP address lookup
+
+
+# Bandwidth for eth0 #TODO make function to accept interface parameter ? #FIXME
+alias bw="sudo ifstat -i eth0 -q 1 1 | tail -1 | awk '{print \"Download \" \$1 \"K Upload \" \$2 \"K\"}'" # Return download/upload bandwidth in K
+alias bwu="sudo ifstat -i eth0 -q 1 1 | tail -1 | awk '{print \$2}'" # Return upload bandwidth in K
+alias bwd="sudo ifstat -i eth0 -q 1 1 | tail -1 | awk '{print \$1}'" # Return download bandwidth in K
+
+# Show open ports
+alias openports='netstat -nape --inet' # Find open ports
+alias ports="lsof -P -i -n" # List open ports
+alias listen='netstat -lt' # List listening ports tcp
+alias lsock='lsof -i -P' # Display open sockets (the -P option to lsof disables port names)
+
+# Firewall on linux
+alias ipt='sudo iptables' # iptables
+alias iptlist='sudo iptables -L -n -v --line-numbers' # Display all firewall rules 
+alias iptlistin='sudo iptables -L INPUT -n -v --line-numbers' # Display firewall input rules
+alias iptlistout='sudo iptables -L OUTPUT -n -v --line-numbers' # Display firewall output rules
+alias iptlistfw='sudo iptables -L FORWARD -n -v --line-numbers' # Display firewall forward rules
+
+# Packet tracing #TODO function for different interfaces/ports #FIXME
+alias pkt_trace='sudo tcpflow -i eth0 -c' # pkt_trace: for use in the following aliases #FIXME
+alias smtp_trace='pkt_trace port smtp' # smtp_trace: to show all SMTP packets
+alias http_trace='pkt_trace port 80' # http_trace: to show all HTTP packets
+alias tcp_trace='pkt_trace tcp' # tcp_trace: to show all TCP packets
+alias udp_trace='pkt_trace udp' # udp_trace: to show all UDP packets
+alias ip_trace='pkt_trace ip' # ip_trace: to show all IP packets
+
+
+###################
+# SERVICES
+###################
+
+#alias s-restart # Service restart
+#alias s-search # Search for service
+#alias s-status # Service status
+#alias s-stop # Service stop
+
+
+###################
+# SYSTEM
+###################
+
+# Debian based updating
+alias apt-upgrade='sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y' # apt dist-upgrade
+alias apt-install='sudo apt-get install' # apt install 
+alias apt-search='apt-cache search' # apt search
+alias apt-show='apt-cache show' # apt show
+alias apt-purge='sudo apt-get --purge remove' # apt remove and purge
+alias apt-remove='sudo apt-get remove' # apt remove
+alias apt-up="sudo apt-get update && sudo apt-get upgrade" # apt upgrade
+
+# reboot / halt / poweroff
+alias reboot='sudo /sbin/reboot' # reboot
+alias poweroff='sudo /sbin/poweroff' # poweroff
+alias halt='sudo /sbin/halt' # halt
+alias shutdown='sudo /sbin/shutdown -r now' # Safe shutdown
+alias shutd='sudo /sbin/shutdown -P now' # shutdown and poweroff FIXME
+alias shutr='sudo /sbin/shutdown -r now' # shutdown and reboot FIXME
+
+###################
+# USERS
+###################
+
+#Show who is on
+alias whoison='w -f -i -s'
+alias luser="sudo ps auxwww | grep sshd: | grep -v 'priv\|grep' | awk '{print \$12}' | sort" # List connected users from ssh
+alias lssh="sudo netstat -tnpa | grep ESTABLISHED.*sshd | awk '{gsub(/\/.*/,\" \",\$7); print \$8\" from \"\$5\" \"\$7}'" # List connected uses from ssh with source IP
+
+
+
+
+#MORE CLEANING NEEDED
+###########-------------------------------------------------------------
 
 
 ###############################
@@ -586,7 +1034,7 @@ ex () {
 #TO FIX
 #https://www.idnt.net/en-GB/kb/941772
 #
-alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.01f\n\", \$1)}'"
+#alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.01f\n\", \$1)}'"
 
 # Searches for text in all files in the current folder
 ftext ()
@@ -602,25 +1050,25 @@ ftext ()
 }
 
 # Copy file with a progress bar
-copy()
-{
-	set -e
-	strace -q -ewrite cp -- "${1}" "${2}" 2>&1 \
-	| awk '{
-	count += $NF
-	if (count % 10 == 0) {
-		percent = count / total_size * 100
-		printf "%3d%% [", percent
-		for (i=0;i<=percent;i++)
-			printf "="
-			printf ">"
-			for (i=percent;i<100;i++)
-				printf " "
-				printf "]\r"
-			}
-		}
-	END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
-}
+#copy()
+#{
+#	set -e
+#	strace -q -ewrite cp -- "${1}" "${2}" 2>&1 \
+#	| awk '{
+#	count += $NF
+#	if (count % 10 == 0) {
+#		percent = count / total_size * 100
+#		printf "%3d%% [", percent
+#		for (i=0;i<=percent;i++)
+#			printf "="
+#			printf ">"
+#			for (i=percent;i<100;i++)
+#				printf " "
+#				printf "]\r"
+#			}
+#		}
+#	END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
+#}
 
 # Show current network information
 netinfo ()

@@ -58,11 +58,19 @@ esac
 ###############################
 
 #######################
-# Load aliases
+# Load files
 #######################
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
+fi
+
+if [ -f ~/.bash_functions ]; then
+    . ~/.bash_functions
+fi
+
+if [ -f ~/.bash_autocompletition ]; then
+    . ~/.bash_autocompletition
 fi
 
 #######################
@@ -76,14 +84,13 @@ export LANG=en_US.UTF-8
 #######################
 # Set terminal
 #######################
-
 # Check the window size after each command and, if necessary, update the values of LINES and COLUMNS
 shopt -s checkwinsize
 
 # Allow ctrl-S for history navigation (with ctrl-R)
 stty -ixon
 
-
+shopt -s expand_aliases 
 
 #######################
 # Set defaults
@@ -96,9 +103,6 @@ export EDITOR=vim
 # Set autocomplete
 #######################
 
-
-
-
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
@@ -106,6 +110,7 @@ if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
+shopt -s cdspell  
 
 
 #######################
@@ -205,7 +210,11 @@ shopt -s histverify                      # Show expanded history before running 
 shopt -s direxpand
 shopt -s expand_aliases
 
-HISTFILE="$HOME/.bash_history" # reset the file
+#STANDARD :
+export HISTFILE="$HOME/.bash_history" # reset the file
+export HISTTIMEFORMAT="%d/%m/%y %T " #Timestamp the bash history
+
+#FIXME THIS PART IS NOT FINALISED !!
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
 if [ "$(id -u)" -ne 0 ]; then 
@@ -227,6 +236,10 @@ else
    echo ""
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
+
+# check if folder .logs exist
+#export PROMPT_COMMAND='history -a; history -c; history -r; if [ "$(id -u)" -ne 0 ]; then echo "$(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.logs/bash-history-$(date "+%Y-%m-%d").log; fi'
+
 PROMPT_COMMAND='history -a; history -c; history -r;'
 
 
@@ -240,8 +253,16 @@ PROMPT_COMMAND='history -a; history -c; history -r;'
 # TMUX
 ###############
 
+###############################################################################
+# X11
+###############################################################################
 
+#GUI RELATED
+# Allow local users to use my X session
+# xhost +local:
 
+# TODO copy Xauthority if sudo 
+# [ -f "$oldhome/.Xauthority" ] && export XAUTHORITY=$oldhome/.Xauthority
 
 #############################
 # Functions
@@ -409,14 +430,14 @@ fi
 PS1="${OFF}"
 PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
 PS1+=""
-PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Users:\$( who | wc -l)"
+#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU
+#PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
+PS1+="\[${DARKGRAY}\](\[${MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
+PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
 PS1+="\[\e[30;1m\])"
 PS1+="\[\e[30;1m\](\[\e[32;1m\]\$(df -h / | tail -1 | awk 'END {print \"Root:\" \$3 \"/\" \$2}')"
 PS1+="\[\e[30;1m\]"
-PS1+=")(\[\e[32;1m\]\$(ls -ld */ 2>/dev/null | wc -l) dir, \$(find . -maxdepth 1 -type f 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
+PS1+=")(\[\e[32;1m\]\$(ls -ld */ 2>/dev/null | wc -l) dir, \$(find . -maxdepth 1 -type f 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files\[\e[30;1m\])\n" #, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
 #PS1+=")(\[\e[32;1m\]\$(find . -maxdepth 1 -t d 2>/dev/null | wc -l) dir, \$(/bin/ls -1 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
 
 ## {USER@HOST:/PATH}
