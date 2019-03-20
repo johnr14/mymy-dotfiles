@@ -1,0 +1,41 @@
+###############################################################################
+# .bash_login
+###############################################################################
+
+#TODO 
+#   - Add external IP
+#   - Remove    
+
+
+#Load functions
+if [ -f ~/.bash_functions ]; then
+    . ~/.bash_functions
+fi
+
+#MYIP=$(__whatsmyip&)
+
+clear
+neofetch --disable packages resolution theme icons --color_blocks off
+unbuffer dfc -d -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs | tail -n +2 |  sort | awk '!seen[$1]++'
+echo ""
+
+PUBLICIP=$(curl -s ifconfig.co 2> /dev/null)
+VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+if [ -n "$VALIDIP" ]; then
+    echo "Public IP = $PUBLICIP"
+else
+    echo "No public ip"
+fi
+echo "Network interfaces :"
+IFACES=$(ifconfig 2>/dev/null | grep "flags=" | tr ':' ' '| awk '{print $1}' | grep -v lo)
+for IFACE in $IFACES; do
+    # Check if ip valid https://www.shellhacks.com/regex-find-ip-addresses-file-grep/
+    VALIDIP=$(ifconfig $IFACE | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+    if [ -n "$VALIDIP" ]; then
+        ifconfig $IFACE 2>/dev/null | grep -E "flags=|inet" | tr '\n' ' ' | sed -e 's/  */ /g' | sed 's/flags=.*inet //; s/prefixlen.*//' | awk '{print $0}'
+    fi
+done
+echo ""
+__isssh
+echo "Users logged in : $(w -f -i -s -h | awk '{print $1}' | sort | uniq -c | tr '\n' ' ' | grep -o '[^$(printf '\t') ].*')"
+echo "There are $(ps aux | tail -n +2 | wc -l) processes running."

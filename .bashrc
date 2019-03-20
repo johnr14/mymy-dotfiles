@@ -47,7 +47,7 @@ esac
 #Test if folder .mymybash exist
 # If not exist :
 #   install needed applications
-#       dfc htop pv git screen tmux xclip net-tools tuptime
+#       dfc htop pv git screen tmux xclip net-tools tuptime neofetch expect curl
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur
@@ -97,12 +97,7 @@ export EDITOR=vim
 #######################
 
 
-# Ignore case on auto-completion
-# Note: bind used instead of sticking these in .inputrc
-if [[ $iatest > 0 ]]; then bind "set completion-ignore-case on"; fi
 
-# Show auto-completion list automatically, without double tab
-if [[ $iatest > 0 ]]; then bind "set show-all-if-ambiguous On"; fi
 
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile

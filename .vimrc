@@ -1,7 +1,7 @@
 "Tell vim to use all colors
 set t_Co=256
  
-# SEE END FOR MY CONFIG
+" SEE END FOR MY CONFIG
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Maintainer: 
@@ -389,7 +389,7 @@ endfunction
 
 
 
-# My config
+" My config
 set expandtab
 set tabstop=2
 set shiftwidth=2

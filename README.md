@@ -5,9 +5,16 @@
 They are for all to see. I had done lots of work on them but lost the latest version after failed backup (to gdrive) and linux reinstall.
 So I decided to put them on github. As I took a great deal of inspiration from other's files, I might as well give back.
 
+GREAT NEWS !!! I FOUND A BACKUP ON ONE OF MY MACHINE !
+IN PROCESS OF MERGING THEM BACK !
+
+I found quite some bashrc and bash_aliases on the net. But few are actually ready for what I want.
+
 I moved over to tmux for a simple reason, it supports striked text.
 
 ![Bash prompt as 2019-03](https://user-images.githubusercontent.com/5272079/54505513-89b1a000-490e-11e9-8497-5b7a0ef2c3f8.png)
+
+![Bash login as 2019-03](https://user-images.githubusercontent.com/5272079/54684129-cb4a7280-4ae9-11e9-9a74-ae5d6265e086.png)
 
 ## NOTE :
 This is a work in progress, there are many places that need some tweeking.
