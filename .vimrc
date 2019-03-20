@@ -1,7 +1,7 @@
 "Tell vim to use all colors
 set t_Co=256
-
-
+ 
+# SEE END FOR MY CONFIG
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Maintainer: 
@@ -30,6 +30,7 @@ set t_Co=256
 "    -> Helper functions
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -385,3 +386,16 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+
+
+# My config
+set expandtab
+set tabstop=2
+set shiftwidth=2
+set autoindent
+set smartindent
+set bg=dark
+set nowrap
+set pastetoggle=<F3>
+set mouse-=a

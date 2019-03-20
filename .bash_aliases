@@ -74,6 +74,7 @@ alias reload='source $HOME/.bashrc'     # Reload bashrc
 
 
 alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
+alias ttyc="tty | sed -e 's/\/dev\/\(pts\|tty\)\///' | sed -e 's/\/dev\///'" # tty - get current tty number, works in direct terminal or ssh
 
 
 ###############################
@@ -387,7 +388,7 @@ alias tmuxlcw="tmux list-windows" # tmux - list current sessions windows
 alias tmuxlcp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title}' -t $(tmux display-message -p '#S')" # tmux - list panes and windows in current session
 alias tmuxlp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title}' -a" # tmux - list panes and windows in all sessions
 alias tmuxcp="tmux display -pt "${TMUX_PANE:?}" '#{pane_title}'" # tmux - current pane name
-alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}:#{pane_title}'" # tmux - current session.window:pane names
+alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}.#{pane_title}'" # tmux - current session.window:pane names
 
 
 #######################
@@ -582,8 +583,10 @@ ex () {
   fi
 }
 
-
-alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.1f\n\", \$1)}'"
+#TO FIX
+#https://www.idnt.net/en-GB/kb/941772
+#
+alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.01f\n\", \$1)}'"
 
 # Searches for text in all files in the current folder
 ftext ()

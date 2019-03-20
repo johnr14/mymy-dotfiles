@@ -23,5 +23,11 @@ git init
 git remote add origin https://github.com/johnr14/mymy-dotfiles.git
 git pull origin master
 
+## Noteworthy things :
 
+Multiplex all bash history across all tmux terminals.
+Search only current pane history or global history. 
+
+HISTTIMEFORMAT="$HOSTNAME $UNIQTTY $PWD %d/%m/%y %T :"
+$UNIQTTY is : ssh@host | /dev/pts/XX | tmuxsession:windowname:pane  
 

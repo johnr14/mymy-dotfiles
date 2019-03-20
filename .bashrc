@@ -12,6 +12,10 @@
 # Update terminal name with user@host%APP running
 # Time all command run
 #
+# TO FIX
+# when doing a sudo, pass $SSH_CLIENT
+#
+#
 # Personal notes for github
 # If README.md was updated on github : 
 #   git pull origin master
@@ -22,6 +26,9 @@
 # readonly PROMPT_COMMAND='history -a >(logger -t "commandlog $USER[$PWD] $SSH_CONNECTION")' 
 ###############################################################################
 
+#TO FIX !!!!!!!!! MAJOR
+#To reevaluate values, you must put a \ before the $() ; so it isn't expanded immediately
+#https://stackoverflow.com/questions/5379986/why-doesnt-my-bash-prompt-update
 
 ###############################################################################
 # General configuration
@@ -40,7 +47,7 @@ esac
 #Test if folder .mymybash exist
 # If not exist :
 #   install needed applications
-#       dfc htop pv git screen tmux xclip net-tools
+#       dfc htop pv git screen tmux xclip net-tools tuptime
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur
@@ -199,14 +206,24 @@ shopt -s histappend                      # append to history, don't overwrite it
 shopt -s cmdhist                         #This lets you save multi-line commands to the history as one command.
 shopt -s histverify                      # Show expanded history before running it.
 
-HISTFILE="$HOME/.bash_history"
+#https://superuser.com/questions/247770/how-to-expand-aliases-inline-in-bash
+shopt -s direxpand
+shopt -s expand_aliases
 
+HISTFILE="$HOME/.bash_history" # reset the file
+
+#NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
 if [ "$(id -u)" -ne 0 ]; then 
-    if [ -n "$TMUX" ]; then
-        #HISTFILE=~/.history/history.$$
-        echo ""
+    if [ -n "$TMUX" ] && [ ! -n "$SSH_CLIENT" ]; then # We are in a TMUX but not from a ssh client 
+        #Let's have a history per pane of tmux
+        UNIQTTY="$(tmuxcpa)"
     elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
         REMOTEIP=$(echo $SSH_CLIENT | awk '{print $1}')
+        if [ -n "$TMUX" ]; then
+            UNIQTTY="$(tmuxcpa)" # keep per pane also
+        else
+            UNIQTTY="$REMOTEIP@ssh>$(ttyc)"
+        fi
     fi
    # export PROMPT_COMMAND=' history -a; history -c; history -r; echo "$HOSTNAME $UNIQTTY $(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.mymybash/bash-history-merged.log; fi'
 else
@@ -216,6 +233,8 @@ else
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
 PROMPT_COMMAND='history -a; history -c; history -r;'
+
+
 
 
 #https://askubuntu.com/questions/59846/bash-history-search-partial-up-arrow
@@ -390,13 +409,15 @@ fi
 # Prompt build
 ###############
 
+
+
 PS1="${OFF}"
 PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
 PS1+=""
-PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:$(__cpu)%" # CPU
+PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU
 PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Net:$(cat /proc/net/tcp | wc -l)"  # Network Connections
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Users:$( who | wc -l)"
+PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
+PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Users:\$( who | wc -l)"
 PS1+="\[\e[30;1m\])"
 PS1+="\[\e[30;1m\](\[\e[32;1m\]\$(df -h / | tail -1 | awk 'END {print \"Root:\" \$3 \"/\" \$2}')"
 PS1+="\[\e[30;1m\]"
