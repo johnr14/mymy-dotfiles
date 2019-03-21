@@ -574,12 +574,13 @@ alias flushdns='sudo service nscd restart ' # Flush DNS entries
 
 # IPs and interfaces
 #FIXME alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" # Return public IP
-alias myip='curl ifconfig.co'
+alias myip="curl -s ifconfig.co"
 alias mydns="nslookup . ifconfig.co | grep Name | awk '{print \$2}'" # Return public DNS FIXME
 alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" # List all interfaces IPs
 alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" # List all interfaces and their IPs
 alias netinfo='__netinfo' # Show current network information
 alias whatsmyip='__whatsmyip' # IP address lookup
+alias whatsmyreversedns="host $(curl -s ifconfig.co) | awk '{ print substr(\$NF, 1, length(\$NF)-1)}'"
 
 
 # Bandwidth for eth0 #TODO make function to accept interface parameter ? # FIXME

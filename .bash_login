@@ -19,8 +19,10 @@ echo ""
 
 PUBLICIP=$(curl -s ifconfig.co 2> /dev/null)
 VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+
 if [ -n "$VALIDIP" ]; then
-    echo "Public IP = $PUBLICIP"
+    REVDNS=$(host $VALIDIP 2> /dev/null | awk '{ print substr($NF, 1, length($NF)-1)}')
+    echo "Public IP = $PUBLICIP            $REVDNS"
 else
     echo "No public ip"
 fi
@@ -35,5 +37,5 @@ for IFACE in $IFACES; do
 done
 echo ""
 __isssh
-echo "Users logged in : $w( -f -i -s -h | awk '{print $1}' | sort | uniq -c | tr '\n' ' ' | grep -o '[^$(printf '\t') ].*')"
+echo "Users logged in : $(w -f -i -s -h | awk '{print $1}' | sort | uniq -c | tr '\n' ' ' | grep -o '[^$(printf '\t') ].*')"
 echo "There are $(ps aux | tail -n +2 | wc -l) processes running."
