@@ -34,6 +34,10 @@
 # General configuration
 ###############################################################################
 
+# FIXME 
+# IF ROOT, FIX $PATH
+# PATH="/sbin:$PATH"
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -47,7 +51,7 @@ esac
 #Test if folder .mymybash exist
 # If not exist :
 #   install needed applications
-#       dfc htop pv git screen tmux xclip net-tools tuptime neofetch expect curl
+#       dfc htop pv git screen tmux xclip net-tools tuptime neofetch expect curl colordiff lsof
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur
@@ -368,6 +372,34 @@ function exitstatus {
 # Return code
 # Cache promt for zsh time update
 
+
+
+###############################################################################
+# Prompt
+###############################################################################
+
+#Must encapsulate in \[ \] https://unix.stackexchange.com/questions/28827/why-is-my-bash-prompt-getting-bugged-when-i-browse-the-history
+#PROMPT COLORS
+PR_BLACK='\[\e[0;30m\]'
+PR_BLUE='\[\e[0;34m\]'
+PR_GREEN='\[\e[0;32m\]'
+PR_CYAN='\[\e[0;36m\]'
+PR_RED='\[\e[0;31m\]'
+PR_PURPLE='\[\e[0;35m\]'
+PR_BROWN='\[\e[0;33m\]'
+PR_LIGHTGRAY='\[\e[0;37m\]'
+PR_DARKGRAY='\[\e[1;30m\]'
+PR_LIGHTBLUE='\[\e[1;34m\]'
+PR_LIGHTGREEN='\[\e[1;32m\]'
+PR_LIGHTCYAN='\[\e[1;36m\]'
+PR_LIGHTRED='\[\e[1;31m\]'
+PR_MAGENTA='\[\e[1;35m\]'
+PR_YELLOW='\[\e[1;33m\]'
+PR_LIGHTYELLOW='\[\e[0;93m\]'
+PR_WHITE='\[\e[1;37m\]'
+PR_NC='\[\e[0m\]' # No Color
+PR_OFF="\[\033[m\]"
+
 ###############
 # Variables
 ###############
@@ -417,23 +449,22 @@ else
 fi
 
 
-###############################################################################
-# Prompt
-###############################################################################
-
 ###############
 # Prompt build
 ###############
 
+# COLORS SELECTION :
+# FIXME
+#
 
 
-PS1="${OFF}"
+PS1="${PR_OFF}"
 PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
 PS1+=""
 #PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU
 #PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
-PS1+="\[${DARKGRAY}\](\[${MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
-PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
+PS1+="\[${PR_DARKGRAY}\](\[${PR_MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
+PS1+="\[${PR_DARKGRAY}\]|\[${PR_MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
 PS1+="\[\e[30;1m\])"
 PS1+="\[\e[30;1m\](\[\e[32;1m\]\$(df -h / | tail -1 | awk 'END {print \"Root:\" \$3 \"/\" \$2}')"
 PS1+="\[\e[30;1m\]"
@@ -441,13 +472,13 @@ PS1+=")(\[\e[32;1m\]\$(ls -ld */ 2>/dev/null | wc -l) dir, \$(find . -maxdepth 1
 #PS1+=")(\[\e[32;1m\]\$(find . -maxdepth 1 -t d 2>/dev/null | wc -l) dir, \$(/bin/ls -1 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
 
 ## {USER@HOST:/PATH}
-PS1+=" ${DARKGRAY}{"
+PS1+=" ${PR_DARKGRAY}{"
 PS1+="${USERNAME}"
-PS1+="${LIGHTCYAN}@${LIGHTGREEN}$HOST"
-PS1+="${PURPLE}$MULTNAME" # Append screen name if in a screen
-PS1+="${LIGHTBLUE}:$DIR" #PATH
-PS1+="${DARKGRAY}} ${PROMPTSYMBOL} "
-PS1+="${OFF}"
+PS1+="${PR_LIGHTCYAN}@${PR_LIGHTGREEN}$HOST"
+PS1+="${PR_PURPLE}$MULTNAME" # Append screen name if in a screen
+PS1+="${PR_LIGHTBLUE}:$DIR" #PATH
+PS1+="${PR_DARKGRAY}} ${PR_PROMPTSYMBOL} "
+PS1+="${PR_OFF}"
 
 #PS1+=' \[\033[m\]{\[\e[32;1m\]\u\[\e[34;1m\]@\[\e[36;1m\]\H:\[\e[34;1m\]\w\[\033[m\]} \[\e[32;1m\]\$ \[\e[m\]\[\e[0;32m\]'
 
