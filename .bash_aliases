@@ -85,6 +85,7 @@ alias alias-search='__aliassearch' # Search for alias by keyword
 alias alias-viewcmd="" # alias - Show cmd for an alias
 #cat .bash_aliases | grep "^alias" | sort
 
+# TODO expand alias 
 
 
 
@@ -317,6 +318,56 @@ alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|
 alias copy='__copy()' # Copy file with a progress bar
 
 ###############################################################
+# Multimedia
+###############################################################
+
+###################
+# audio
+###################
+
+# Cd backup
+# convert to opus, mp3, ogg, flac, wav
+# Extract audio from video
+
+###################
+# ffmpeg & video
+###################
+# DVD/Bluray backup
+# Convert to webm, av1, x264, x265
+# Rotate
+# Cut
+# Smooth
+# Resize
+# Reframe
+# Extract meta
+
+
+###################
+# imagemagick and image
+###################
+
+# Generate video 
+# Animate to gif (from img or video)
+# Strip meta
+# Max compression of image
+
+###################
+# Upload audio/image/video 
+###################
+
+# To youtube or youphptube
+# 
+
+###################
+# youtube-dl
+###################
+
+# Extract audio & add thumbnail
+# Download video & thumbnail
+# Convert to format
+
+
+###############################################################
 # NETWORKING
 ###############################################################
 
@@ -373,7 +424,10 @@ alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 # SCREEN, SSH & TMUX RELATED
 ###############################################################
 
-# SCREENS
+###############################
+# SCREEN            
+###############################
+
 alias screens='screen -list' # List screen
 alias screenconnect='__screenconnect' # Connect to screen #n or PID.NAME
 alias screenrename='__screenrename' # Rename screen session name, accept: [screen# | screensession | empty ] newname
@@ -384,8 +438,8 @@ alias screenrename='__screenrename' # Rename screen session name, accept: [scree
 # Am I running on a screen, ssh or tmux session ?
 alias isscreen='__issc' # screen - check if running from a screen
 alias isssh='__isssh' # ssh - check if curently in a ssh session
-alias istmux="" # tmux check if curently in a tmux session FIXME
-alias owntmux="" # tmux - do user has a running instance of tmux FIXME
+
+
 
 #TODO
 # alias istmux='__istmux' # Check if currently running in a tmux session
@@ -398,12 +452,13 @@ alias owntmux="" # tmux - do user has a running instance of tmux FIXME
 # alias sshwhere='__sshwhere' # Where do I have active ssh connections
 # alias sshwhat='__sshwhat' # What is running on my ssh connections
 
+#ps u -p $(ps -el | grep $(ps -el | grep SCREEN_SESSION_PID | grep bash | awk '{print $4}') | grep -v bash | awk '{print $4}')
+
+###############################
+# SCREEN            
+###############################
 #SSH 
 alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client originating ip on remote host
-
-
-
-#ps u -p $(ps -el | grep $(ps -el | grep SCREEN_SESSION_PID | grep bash | awk '{print $4}') | grep -v bash | awk '{print $4}')
 
 ###############################
 # TMUX            
@@ -422,6 +477,7 @@ if [ -n "$TMUX" ]; then
 alias tmuxs="tmux display-message -p '#S'" # tmux - current session name
 alias tmuxta="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux - list all terminals attatched to tmux server
 alias tmuxls="tmux ls" # tmux - list all sessions
+alias tmuxown="" # tmux - do user has a running instance of tmux FIXME
 
 ###############
 # Get window info
