@@ -716,7 +716,7 @@ alias ux="chmod u+r" # make user executable
 
 
 #Mounts and space
-alias dfc='dfc -d -s -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,+se.mergerfs,fuse 2>/dev/null'
+alias dfc='dfc -d -T -t ext2,ext3,ext4,xfs,zfs,btrfs,fuseblk,ntfs,fat,+se.mergerfs,fuse 2>/dev/null'
 alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" #Show mounts only
 
 # easy navigation: .., ..., .... and .....

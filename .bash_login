@@ -6,6 +6,11 @@
 #   - Add external IP
 #   - Remove    
 
+# IS DFC TOO WIDE ??
+
+LIGHTBLUE=$(tput setaf 4)
+LIGHTGREEN='\[\e[1;32m\]'
+WHITE=$(tput sgr0)
 
 #Load functions
 if [ -f ~/.bash_functions ]; then
@@ -22,7 +27,8 @@ VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[
 
 if [ -n "$VALIDIP" ]; then
     REVDNS=$(host $VALIDIP 2> /dev/null | awk '{ print substr($NF, 1, length($NF)-1)}')
-    echo "Public IP = $PUBLICIP            $REVDNS"
+    printf 'Public IP = %s %80s\n' "${LIGHTBLUE}$PUBLICIP${WHITE}" "Reverse DNS = ${LIGHTBLUE}$REVDNS${WHITE}" # Right alignment of REVDNS
+    #echo "Public IP = $PUBLICIP            $REVDNS"
 else
     echo "No public ip"
 fi
