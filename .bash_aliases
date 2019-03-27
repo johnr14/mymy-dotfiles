@@ -231,7 +231,7 @@ alias m6='alias g6="cd `pwd`"' # Bookmark curent directorie to g6
 alias m7='alias g7="cd `pwd`"' # Bookmark curent directorie to g7
 alias m8='alias g8="cd `pwd`"' # Bookmark curent directorie to g8
 alias m9='alias g9="cd `pwd`"' # Bookmark curent directorie to g9
-alias mdump='alias|grep -e "alias g[0-9]"|grep -v "alias m" > ~/.bash_ohmy_bookmarks'   # Save bookmarked directories alias (g1-g9)
+alias mdump='alias|grep -e "alias g[0-9]"|grep -v "alias m" > ~/.bash_ohmy_bookmarks'   # Save bookmarked directories alias (g1-g9) FIXME
 alias mls='alias | grep -e "alias g[0-9]"|grep -v "alias m"|sed "s/alias //"' # List directories bookmark alias (g1-g9)
 touch ~/.bash_mymy_bookmarks && source ~/.bash_mymy_bookmarks
 
@@ -304,8 +304,8 @@ alias spellcheck="aspell -t check --lang=en "
 # MOUNTS AND SPACE
 ###############################################################
 
-alias dfc='dfc -W -d -s -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs 2>/dev/null' # Show colorized mounts of real filesystems with bars
-alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" # Show mounts only
+alias dfc='dfc -W -d -s -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,fuse,ntfs,fat,xfs,nfs 2>/dev/null' # Show colorized mounts of real filesystems with bars
+alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" # mount - show real mounts only
 
 #SSH MOUNTS
 #alias sshmounts=
@@ -332,11 +332,23 @@ alias copy='__copy()' # Copy file with a progress bar
 ###################
 # ffmpeg & video
 ###################
+# Codec comparison
+# https://www.texpion.com/2018/07/av1-vs-vp9-vs-avc-h264-vs-hevc-h265-2-psnr.html
+# x264 for faster speed / quality / size ratio
+# AV1 for smaller file, slow, not fully matured and supported currently, but will be a standard soon; will be faster with the work on SVT-AV1
+# x265 for best quality 
+
+
+
+
 # DVD/Bluray backup
 # Convert to webm, av1, x264, x265
 # Rotate
 # Cut
 # Smooth
+# ffmpeg -t 20 -i 05410004.MOV -vf vidstabdetect=stepsize=32:mincontrast=0.001:shakiness=10:accuracy=15:result=transform_vectors.trf -f null -
+# ffmpeg -i 05410004.MOV -vf vidstabtransform=input=transform_vectors.trf:zoom=.0005:smoothing=340:maxshift=64:maxangle=0.7,unsharp=5:5:0.8:3:3:0.4 -vcodec libx264 -preset slow -tune film -crf 18 -an 05410004.maxangle07.mp4
+
 # Resize
 # Reframe
 # Extract meta
@@ -460,6 +472,9 @@ alias isssh='__isssh' # ssh - check if curently in a ssh session
 #SSH 
 alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client originating ip on remote host
 
+# ssh known hosts
+# alias sshhistory="history | grep ssh | grep -E '[a-zA-Z0-9.-]@[a-zA-Z0-9.-]'"
+
 ###############################
 # TMUX            
 ###############################
@@ -497,6 +512,7 @@ alias tmuxlp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title
 alias tmuxcp="tmux display -pt "${TMUX_PANE:?}" '#{pane_title}'" # tmux - current pane name
 alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}.#{pane_title}'" # tmux - current session.window:pane names
 
+alias tmuxlpp="" # tmux - list pannels paths FIXME
 
 #######################
 # Set configuration
@@ -695,19 +711,16 @@ alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print 
 
 ###############################################################################
 # SYSTEM
-# SYS ADMIN RELATED 
 ###############################################################################
 
 # Debian based updating
-alias apt-upgrade='sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y' # apt dist-upgrade
-alias apt-install='sudo apt-get install' # apt install 
-alias apt-search='apt-cache search' # apt search
-alias apt-show='apt-cache show' # apt show
-alias apt-purge='sudo apt-get --purge remove' # apt remove and purge
-alias apt-remove='sudo apt-get remove' # apt remove
-alias apt-up="sudo apt-get update && sudo apt-get upgrade" # apt upgrade
-
-
+alias apt-dup='sudo apt-get update && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y' # apt - update and dist-upgrade
+alias apt-install='sudo apt-get install' # apt - install 
+alias apt-search='apt-cache search' # apt - search
+alias apt-show='apt-cache show' # apt - show
+alias apt-purge='sudo apt-get --purge remove' # apt - remove and purge
+alias apt-remove='sudo apt-get remove' # apt - remove 
+alias apt-up="sudo apt-get update && sudo apt-get upgrade -y" # apt - update and upgrade
 
 # reboot / halt / poweroff
 alias reboot='sudo /sbin/reboot' # reboot - reboot
@@ -719,7 +732,7 @@ alias shutr='sudo /sbin/shutdown -r now' # shutdown -shutdown and reboot FIXME
 
 # Frees up the cached memory
 alias freemem='sync && echo 3 | sudo tee /proc/sys/vm/drop_caches'
-alias flush="dscacheutil -flushcache"
+alias flush="" # FIXME
 
 alias hosts="sudo vim /etc/hosts"
 
@@ -741,89 +754,6 @@ alias whoisssh="sudo netstat -tnpa | grep ESTABLISHED.*sshd | awk '{gsub(/\/.*/,
 
 alias luser="sudo ps auxwww | grep sshd: | grep -v 'priv\|grep' | awk '{print \$12}' | sort" #List connected users from ssh FIXME
 alias lssh="sudo netstat -tnpa | grep ESTABLISHED.*sshd | awk '{gsub(/\/.*/,\" \",\$7); print \$8\" from \"\$5\" \"\$7}'" #List connected uses from ssh with source IP FIXME
-
-
-
-
-#MORE CLEANING NEEDED
-###########-------------------------------------------------------------
-
-
-
-
-#PROCESS RELATED
-# Search running processes
-alias p="ps aux | grep "
-alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
-
-alias j='jobs -l' # Current running jobs
-
-alias psg='ps aux | grep '
-alias psu='ps -fHU $USER'
-
-
-#FILES & DIR RELATED
-alias ff="find . -name $1" # Find file by name
-
-alias ax="chmod a+x" # make executable
-alias or="chmod o+r" # make readable by all
-alias ux="chmod u+r" # make user executable
-
-
-
-#Mounts and space
-alias dfc='dfc -d -T -t ext2,ext3,ext4,xfs,zfs,btrfs,fuseblk,ntfs,fat,+se.mergerfs,fuse 2>/dev/null'
-alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" #Show mounts only
-
-# easy navigation: .., ..., .... and .....
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-alias cdh='cd ~'
-
-# Alter the ls command
-alias ll='ls -F --color --time-style="+%d %b %Y %H:%M"' #List
-alias ls='ls -lacf --color' #List files in colors
-alias lls='ls -lacF' #List files in colors, directories end with /
-alias la="ls --color -lAGbhF --time-style='+%d %b %Y %H:%M'  --group-directories-first"
-alias lx="ls --color -lGbhFXB --time-style='+%d %b %Y %H:%M' | grep -v /" #List files by extensions
-alias lf="ls --color -lGbhF --time-style='+%d %b %Y %H:%M' | grep -v /" #List files by filename
-alias lsd="ls -ld --color -tolAGbhF --time-style='+%d %b %Y %H:%M' */" #List directories only
-alias llt="ls -thor --time-style='+%d %b %Y %H:%M' | head " #List most recent file changed
-alias llta="ls -thor --time-style='+%d %b %Y %H:%M'" #List files ordered with most recent on top
-
-# Alias's for multiple directory listing commands
-alias la='ls -Alh --color=always' # show hidden files
-alias ls='ls -aFh --color=always' # add colors and file type extensions
-alias lx='ls -lXBh' # sort by extension
-alias lk='ls -lSrh' # sort by size
-alias lc='ls -lcrh' # sort by change time
-alias lu='ls -lurh' # sort by access time
-#alias lr='ls -lRh' # recursive ls
-alias lt='ls -ltrh' # sort by date
-#alias lm='ls -alh |more' # pipe through 'more'
-#alias lw='ls -xAh' # wide listing format
-#alias ll='ls -Fls' # long listing format
-#alias labc='ls -lap' #alphabetical sort
-#alias lf="ls -l | egrep -v '^d'" # files only
-#alias ldir="ls -l | egrep '^d'" # directories only
-
-# Bash Directory Bookmarks http://www.huyng.com/posts/quick-bash-tip-directory-bookmarks/
-alias m1='alias g1="cd `pwd`"'
-alias m2='alias g2="cd `pwd`"'
-alias m3='alias g3="cd `pwd`"'
-alias m4='alias g4="cd `pwd`"'
-alias m5='alias g5="cd `pwd`"'
-alias m6='alias g6="cd `pwd`"'
-alias m7='alias g7="cd `pwd`"'
-alias m8='alias g8="cd `pwd`"'
-alias m9='alias g9="cd `pwd`"'
-alias mdump='alias|grep -e "alias g[0-9]"|grep -v "alias m" > ~/.bookmarks'   #Save directories alias
-alias lma='alias | grep -e "alias g[0-9]"|grep -v "alias m"|sed "s/alias //"' #list directories alias
-touch ~/.bookmarks
-source ~/.bookmarks
-
 
 
 
