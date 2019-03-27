@@ -29,6 +29,13 @@
 #
 ###############################################################################
 
+######
+## TODO
+
+# Make sure that admin commands have sudo in them
+
+######
+
 #
 # cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -v "#" | sed -e 's/\=.*\#/ =/'| sort
 # cat .bash_aliases | grep "^alias" | grep -E "#" | cat .bash_aliases | grep "^alias" | cut -d' ' -f2- | grep -E "#" | sed -e 's/\=.*\#/ : /' | tr -s ' ' | sort | column -t -s:
@@ -105,11 +112,16 @@ alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 # History                     
 ###############################
 alias h="history | grep -i"
-alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" # History - most used cmd
-alias hh="history | tail -35" # history - return last 35 cmd run
-#alias hs='history | grep -i ' # 
-alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr" # history - shows most 
+alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' | sort | uniq -c | sort -nr | head -15" # History - most used cmd FIXME
 
+#alias hs='history | grep -i ' # 
+alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr" # history - shows most  FIXME
+
+
+if [ -f $HOME/.bash_history-merged ]; then
+alias hh="__hh" # history - return last 35 cmd run FIXME
+#alias h
+fi
 #######################################
 # COLORIZE
 #######################################
@@ -186,7 +198,6 @@ alias compc="gcc -o exe -O3 -lm -W -Wall -Wuninitialized -fbounds-check "
 
 #Git #FIXME probably more complete/useful versions?
 alias gs='git status' # Git status
-alias gl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" # Git log 
 alias ga='git add' # Git add
 alias gc='git commit -am' # Git commit
 alias gu='git up' # Git up
@@ -196,7 +207,10 @@ alias gb='git branch' # Git branch
 alias gup='gu && gp' # Git up and git push
 alias gcup='gc && gup' # Git commit and git up and push
 
-
+alias gitlog-resumed="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" # git - git log overview of commits for a file 
+alias gitlog-view="git log --follow -p -- " # git - view all changes from commits on a file
+#alias gitrevert="git revert"
+# alias gitshow="" 
 
 ###############################################################
 # COMPRESSION AND DECOMPRESSION
@@ -487,21 +501,28 @@ if [ -n "$TMUX" ]; then
 #######################
 
 ###############
-# Get session info
+# Session
 ###############
-alias tmuxs="tmux display-message -p '#S'" # tmux - current session name
-alias tmuxta="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux - list all terminals attatched to tmux server
-alias tmuxls="tmux ls" # tmux - list all sessions
-alias tmuxown="" # tmux - do user has a running instance of tmux FIXME
+# Get info
+alias tmuxcs="tmux display-message -p '#S'" # tmux - current session name
+alias tmuxls="tmux ls" # tmux - list all sessions with info
+alias tmuxlsn="tmux ls | awk '{ print \$1 }' | sed 's/://'" # tmux - list all session names
+# Set
+alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux - rename current session
 
 ###############
-# Get window info
+# Window 
 ###############
-alias tmuxt="" # tmux - list terminals attached to current window
-alias tmuxw="tmux display-message -p '#W'" # tmux - display current window name
+alias tmuxgw="" # tmux - get current window TODO
 
+alias tmuxcw="tmux display-message -p '#W'" # tmux - display current window name
 alias tmuxlw="tmux list-windows -a" # tmux - list windows for all sessions
 alias tmuxlcw="tmux list-windows" # tmux - list current sessions windows
+
+alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - rename current window
+
+#alias tmuxfaw="" # tmux - find active window of a session
+
 
 ###############
 # Get pane info
@@ -512,7 +533,9 @@ alias tmuxlp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title
 alias tmuxcp="tmux display -pt "${TMUX_PANE:?}" '#{pane_title}'" # tmux - current pane name
 alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}.#{pane_title}'" # tmux - current session.window:pane names
 
-alias tmuxlpp="" # tmux - list pannels paths FIXME
+alias tmuxlpp="" # tmux - list pannels paths TODO
+
+#alias tmuxsm="" # tmux - send message to active window of session TODO
 
 #######################
 # Set configuration
@@ -525,9 +548,15 @@ alias tmuxlpp="" # tmux - list pannels paths FIXME
 #Rename
 ###############
 
-alias tmuxrs="tmux rename-session -t $(tmux display-message -p '#S') " # tmux - rename current session
-alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - rename current window
+
+
 alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " # tmux - rename current panel
+
+###############
+# Terminals
+###############
+
+alias tmuxlt="tmux list-panes -a -F '#{pane_tty} #{session_name}'" # tmux - list all terminals attatched to tmux server
 
 ###############
 #Create

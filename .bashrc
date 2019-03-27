@@ -11,8 +11,9 @@
 # Fix completition
 # Update terminal name with user@host%APP running
 # Time all command run
+#Use .bashrc from sudoed account
 #
-# TO FIX
+# FIXME
 # when doing a sudo, pass $SSH_CLIENT
 #
 #
@@ -203,8 +204,8 @@ fi
 export HISTSIZE=100000 # big big history
 export HISTFILESIZE=1000000 # big big history filesize
 
-export HISTCONTROL="erasedups:ignoreboth" #Stop bash from caching duplicate lines.
-export HISTIGNORE="&:[ ]*:exit" #Remove from history
+export HISTCONTROL="erasedups:ignoreboth:ignoredups" # Stop bash from caching duplicate lines.
+export HISTIGNORE="&:[ ]*:exit:ls:clear:df:dfc" # Remove from history
 
 shopt -s histappend                      # append to history, don't overwrite it
 shopt -s cmdhist                         #This lets you save multi-line commands to the history as one command.
@@ -216,25 +217,53 @@ shopt -s expand_aliases
 
 #STANDARD :
 export HISTFILE="$HOME/.bash_history" # reset the file
-export HISTTIMEFORMAT="%d/%m/%y %T " #Timestamp the bash history
+export HISTTIMEFORMAT="%d/%m/%y %T " # Timestamp the bash history
+export PROMPT_COMMAND='history -a; history -c; history -r;'
+
+#################
+# Multi history
+#################
 
 #FIXME THIS PART IS NOT FINALISED !!
+# TODO : 
+#       
+#       SEARCH HISTORY : by pwd, by cmd, by time, by tmuxname, by hostname
+#       
+
+# make sure directory is created
+mkdir -p $HOME/.bash_histories 
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
-if [ "$(id -u)" -ne 0 ]; then 
+if [ "$(id -u)" -ne 0 ]; then # We are not root
     if [ -n "$TMUX" ] && [ ! -n "$SSH_CLIENT" ]; then # We are in a TMUX but not from a ssh client 
         #Let's have a history per pane of tmux
-        UNIQTTY="$(tmuxcpa)"
+        UNIQTTY="tmux_$(tmuxcpa)"
+        UNIQTTYNAME="tmux_$(tmuxcpa)"
     elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
         REMOTEIP=$(echo $SSH_CLIENT | awk '{print $1}')
         if [ -n "$TMUX" ]; then
-            UNIQTTY="$(tmuxcpa)" # keep per pane also
+            UNIQTTY="$REMOTEIP@ssh>tmux_$(tmuxcpa)" # keep per pane also
+            UNIQTTYNAME="tmux_$(tmuxcpa)"
         else
-            UNIQTTY="$REMOTEIP@ssh>$(ttyc)"
+            UNIQTTY="$REMOTEIP@ssh>pts_$(ttyc)"
+            UNIQTTYNAME="pts_$(ttyc)"
+        fi
+    else 
+        INPTS=$(tty | grep pts)
+        if [ ! -z $INPTS ]; then 
+            UNIQTTY="pts=$(ttyc)"
+            UNIQTTYNAME="pts_$(ttyc)"
+        else
+            UNIQTTY="tty=$(ttyc)"
+            UNIQTTYNAME="tty_$(ttyc)"
         fi
     fi
-   # export PROMPT_COMMAND=' history -a; history -c; history -r; echo "$HOSTNAME $UNIQTTY $(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.mymybash/bash-history-merged.log; fi'
-else
+    export HISTTIMEFORMAT=""
+    export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> $HOME/.bash_history-merged'
+    export HISTFILE="$HOME/.bash_histories/$UNIQTTYNAME" # reset the file
+else # We are root
+    # Check if in sudo
+    # TODO
     #HISTFILE=~/.history/history.$$
    # export PROMPT_COMMAND='history -a; history -c; history -r;'
    echo ""
@@ -244,7 +273,7 @@ fi
 # check if folder .logs exist
 #export PROMPT_COMMAND='history -a; history -c; history -r; if [ "$(id -u)" -ne 0 ]; then echo "$(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.logs/bash-history-$(date "+%Y-%m-%d").log; fi'
 
-PROMPT_COMMAND='history -a; history -c; history -r;'
+
 
 
 
@@ -462,7 +491,7 @@ fi
 PS1="${PR_OFF}"
 PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
 PS1+=""
-#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU
+#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU FIXME USE UPTIME uptime|awk '{ print $(NF-2) }'
 #PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
 PS1+="\[${PR_DARKGRAY}\](\[${PR_MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
 PS1+="\[${PR_DARKGRAY}\]|\[${PR_MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
