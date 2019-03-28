@@ -447,7 +447,7 @@ alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
 #TODO NICE
 
 ###############################################################
-# SCREEN, SSH & TMUX RELATED
+# SCREEN, SSH, terminal & TMUX RELATED
 ###############################################################
 
 ###############################
@@ -490,11 +490,17 @@ alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client origina
 # alias sshhistory="history | grep ssh | grep -E '[a-zA-Z0-9.-]@[a-zA-Z0-9.-]'"
 
 ###############################
+# TERMINAL           
+###############################
+alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NET_WM_PID | sed 's/^.*=//')"
+###############################
 # TMUX            
 ###############################
 
 # If tmux is not accessible, line in a sudo, you may get errors trying to parse those aliases
 if [ -n "$TMUX" ]; then
+
+alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x1b[0m\n\"; done | column" # print - print table of all tmux colors
 
 #######################
 # Get information

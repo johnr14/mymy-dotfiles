@@ -478,20 +478,25 @@ else
 fi
 
 
+
 ###############
 # Prompt build
 ###############
 
 # COLORS SELECTION :
-# FIXME
-#
+# FIXME 
+#   IN SSH
+#   IN SCREEN
+#   IN TMUX
+#   LAST CMD RUNTIME
+#   LAST CMD RETURN CODE
 
 
 
 PS1="${PR_OFF}"
 PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
 PS1+=""
-#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(__cpu)%" # CPU FIXME USE UPTIME uptime|awk '{ print $(NF-2) }'
+#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(uptime|awk '{ print $(NF-2) } ' | sed 's/,//')" # CPU FIXME USE UPTIME uptime|awk '{ print $(NF-2) }'
 #PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
 PS1+="\[${PR_DARKGRAY}\](\[${PR_MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
 PS1+="\[${PR_DARKGRAY}\]|\[${PR_MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
@@ -529,8 +534,13 @@ PS1+="${PR_OFF}"
 # https://stackoverflow.com/questions/9747952/pane-title-in-tmux
 # Scroling region using tput 
 
+# Add right prompt https://wiki.archlinux.org/index.php/Bash/Prompt_customization
+#rightprompt()
+#{
+#    printf "%*s" $COLUMNS "right prompt"
+#}
 
-
+#PS1='\[$(tput sc; rightprompt; tput rc)\]left prompt > '
 
 
 

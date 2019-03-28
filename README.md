@@ -37,7 +37,7 @@ Lots of tmux aliases
 WIP WILL BE ADDED LATER
 ```
 
-### Concept
+### Structure
 All stardard .dotfiles will be in $HOME. 
 Additionnal files will be in folder $HOME/.mymydotfiles :
 subfolders : 
@@ -50,7 +50,10 @@ $HOME/.mymydotfiles/avid # Audio or video specific functions or scripts
 $HOME/.mymydotfiles/backup
 $HOME/.mymydotfiles/
 
-~~~Multiplex all bash history across all tmux terminals.
+### History
+History will be save in folder $HOME/.bash_history/ and under a unique identifier filename. This will enable per terminal history search with arrows without seeing what whas typed in other terminals.
+You can search local history with h and global history with hh.
+Multiplex all bash history across all tmux terminals.
 Search only current pane history or global history.~~~
 
 HISTTIMEFORMAT="$HOSTNAME $UNIQTTY $PWD %d/%m/%y %T :"

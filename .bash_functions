@@ -225,6 +225,7 @@ history 1 | sed 's/^ *[0-9]* *//'
 
 function __hh ()
 { #https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
+# FIXME WIP STOPPED HERE
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
@@ -272,8 +273,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [[ -n $1 ]]; then
-    echo "Last line of file specified as non-opt/last argument:"
-    tail -1 "$1"
+    cat $HOME/.bash_history-merged | grep $1
 fi
 
 #cat .bash_history-merged | awk -vFPAT='("[^"]+")' '$2 == "\"pts=12\"" {print $0}'
@@ -673,7 +673,14 @@ ex () {
 #https://www.idnt.net/en-GB/kb/941772
 #
 #alias __cpu="grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$4+\$5)} END {print usage}' | awk '{printf(\"%.01f\n\", \$1)}'"
+function __cpu ()
+{
 
+SYSLOAD=$(uptime|awk '{ print $(NF-2) } ' | sed 's/,//')
+NPROC=$(nproc)
+bc -l <<< $SYSLOAD/$NPROC
+
+}
 
 # Copy file with a progress bar
 #copy()
@@ -710,10 +717,6 @@ ex () {
 	#ifconfig | awk /'HWaddr/ {print $4,$5}'
 	#echo "---------------------------------------------------"
 #}
-
-
-
-
 
 
 
