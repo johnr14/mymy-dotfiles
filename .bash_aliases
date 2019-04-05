@@ -506,6 +506,9 @@ alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x
 # Get information
 #######################
 
+#  tmux display -t yakuake:2.1 -p '#{pane_width}-#{pane_height}'
+
+
 ###############
 # Session
 ###############
@@ -531,7 +534,7 @@ alias tmuxrw="tmux rename-window -t $(tmux display-message -p '#I') " # tmux - r
 
 
 ###############
-# Get pane info
+# Pane
 ###############
 
 alias tmuxlcp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title}' -t $(tmux display-message -p '#S')" # tmux - list panes and windows in current session
@@ -539,9 +542,15 @@ alias tmuxlp="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title
 alias tmuxcp="tmux display -pt "${TMUX_PANE:?}" '#{pane_title}'" # tmux - current pane name
 alias tmuxcpa="tmux display -pt "${TMUX_PANE:?}" '#{session_name}:#{window_name}.#{pane_title}'" # tmux - current session.window:pane names
 
+alias tmuxlpi="tmux list-panes -s -F '#{session_name}:#{window_name}.#{pane_title} [#{pane_width}x#{pane_height}]' -a" # tmux - list pane information : pane size
+
 alias tmuxlpp="" # tmux - list pannels paths TODO
 
 #alias tmuxsm="" # tmux - send message to active window of session TODO
+
+
+alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " # tmux - rename current panel
+alias tmuxresizeto="" # tmux - resize pane to size
 
 #######################
 # Set configuration
@@ -556,7 +565,7 @@ alias tmuxlpp="" # tmux - list pannels paths TODO
 
 
 
-alias tmuxrp="tmux select-pane -t $(tmux display -pt ${TMUX_PANE:?} '#{pane_index}') -T " # tmux - rename current panel
+
 
 ###############
 # Terminals
@@ -658,9 +667,9 @@ alias bat_status='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep 
 # APC 
 #######
 alias apcwatt="__apcwatt" # Return watts used on APC connected UPS
-alias apcleft="sudo apcaccess | grep 'TIMELEFT' | awk '{ print $3 }'" # APC UPS time left on battery
-alias apccharge="sudo apcaccess | grep 'BCHARGE' | awk '{ print $3 }'" # APC UPS charge left
-alias apc="sudo apcaccess | grep -E 'MODEL|STATUS|LOADPCT|BCHARGE|TIMELEFT|NOMPOWER'" # Compact APC USP information
+alias apcleft="apcaccess | grep 'TIMELEFT' | awk '{ print $3 }'" # APC UPS time left on battery
+alias apccharge="apcaccess | grep 'BCHARGE' | awk '{ print $3 }'" # APC UPS charge left
+alias apc="apcaccess | grep -E 'MODEL|STATUS|LOADPCT|BCHARGE|TIMELEFT|NOMPOWER'" # Compact APC USP information
 
 ###################
 # MEMORY

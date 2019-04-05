@@ -398,4 +398,6 @@ set smartindent
 set bg=dark
 set nowrap
 set pastetoggle=<F3>
-set mouse-=a
+set mouse=a
+" to allow scrolling while in tmux
+set ttymouse=xterm2

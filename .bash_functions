@@ -320,8 +320,8 @@ __ex () { # Extract compressed file
 #######################################
 
 __apcwatt() { # Return watts used on APC connected UPS
-LOADPCT=`sudo apcaccess  | grep 'LOADPCT' | awk '{ print $3 }'`
-NOMPOWER=`sudo apcaccess  | grep 'NOMPOWER' | awk '{ print $3 }'`
+LOADPCT=`apcaccess  | grep 'LOADPCT' | awk '{ print $3 }'`
+NOMPOWER=`apcaccess  | grep 'NOMPOWER' | awk '{ print $3 }'`
 WATT=$((${LOADPCT%.*}*$NOMPOWER/100))
 echo "$WATT"
 }
