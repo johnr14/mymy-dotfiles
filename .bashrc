@@ -104,6 +104,9 @@ shopt -s expand_aliases
 # Set the default editor to vim.
 export EDITOR=vim
 
+# Support multithread for XZ
+export XZ_DEFAULTS="-T 0"
+
 #######################
 # Set autocomplete
 #######################
