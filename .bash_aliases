@@ -766,6 +766,10 @@ alias apt-purge='sudo apt-get --purge remove' # apt - remove and purge
 alias apt-remove='sudo apt-get remove' # apt - remove 
 alias apt-up="sudo apt-get update && sudo apt-get upgrade -y" # apt - update and upgrade
 
+# Fedora based updating
+# FIXME check if silverblue or regular
+#alias dnf="podman run --rm -it registry.fedoraproject.org/fedora:29 dnf $@"
+
 # reboot / halt / poweroff
 alias reboot='sudo /sbin/reboot' # reboot - reboot
 alias poweroff='sudo /sbin/poweroff' # poweroff - poweroff
