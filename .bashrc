@@ -53,7 +53,7 @@ esac
 #Test if folder .mymybash exist
 # If not exist :
 #   install needed applications
-#       dfc htop pv git screen tmux xclip net-tools tuptime neofetch expect curl colordiff lsof
+#       dfc htop pv git screen tmux xclip net-tools tuptime neofetch expect curl colordiff lsof inxi
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur

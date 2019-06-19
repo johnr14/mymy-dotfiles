@@ -784,6 +784,9 @@ alias flush="" # FIXME
 
 alias hosts="sudo vim /etc/hosts"
 
+# Get system information
+alias inxi="inxi -Fxzc0"
+
 ###############################
 # Sudo and su
 ###############################
