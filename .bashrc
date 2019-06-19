@@ -8,7 +8,8 @@
 # First run check
 # Update from github
 # Prompt cleanup
-# Fix completition
+# Fix completition - sudo is fixed
+# while in sudo, some caracters are not removed from prompt when pressing up/down
 # Update terminal name with user@host%APP running
 # Time all command run
 #Use .bashrc from sudoed account
@@ -300,6 +301,9 @@ fi
 ###############################################################################
 # X11
 ###############################################################################
+
+# Find if running X11 or Wayland
+# echo $XDG_SESSION_TYPE
 
 #GUI RELATED
 # Allow local users to use my X session
