@@ -74,6 +74,7 @@ if [ -f ~/.bash_functions ]; then
     . ~/.bash_functions
 fi
 
+# FIXME file was not created !
 if [ -f ~/.bash_autocompletition ]; then
     . ~/.bash_autocompletition
 fi
@@ -120,6 +121,8 @@ fi
 
 shopt -s cdspell  
 
+# Needed for sudo completition, see https://askubuntu.com/questions/874179/sudo-command-doesnt-autocomplete-anymore-on-files
+complete -cf sudo
 
 #######################
 # Set path
