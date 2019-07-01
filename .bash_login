@@ -12,15 +12,15 @@ if [ -f ~/.bash_functions ]; then
 fi
 
 clear
-if ! [ -x "$(command -v neofetch)" ]; then
+if [ -x "$(command -v neofetch)" ]; then
   neofetch --disable packages resolution theme icons --color_blocks off
 fi
-if ! [ -x "$(command -v dfc)" ]; then
+if [ -x "$(command -v dfc)" ]; then
   unbuffer dfc -d -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs,fuse | tail -n +2 |  sort | awk '!seen[$1]++'
 fi
 echo ""
 
-if ! [ -x "$(command -v curl)" ]; then
+if [ -x "$(command -v curl)" ]; then
   PUBLICIP=$(curl -s ifconfig.co 2> /dev/null)
   VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
 
@@ -37,7 +37,7 @@ echo "Network interfaces :"
 IFACES=$(ifconfig 2>/dev/null | grep "flags=" | tr ':' ' '| awk '{print $1}' | grep -v lo)
 for IFACE in $IFACES; do
     # Check if ip valid https://www.shellhacks.com/regex-find-ip-addresses-file-grep/
-    VALIDIP=$(ifconfig $IFACE | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+    VALIDIP=$(ifconfig $IFACE 2>/dev/null | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
     if [ -n "$VALIDIP" ]; then
         ifconfig $IFACE 2>/dev/null | grep -E "flags=|inet" | tr '\n' ' ' | sed -e 's/  */ /g' | sed 's/flags=.*inet //; s/prefixlen.*//' | awk '{print $0}'
     fi
