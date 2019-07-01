@@ -384,7 +384,7 @@ else
 fi
 }
 
-function show-empty-folders {
+function show_empty_folders {
     find . -depth -type d -empty
 } # https://gist.github.com/torifat/1254570
 
