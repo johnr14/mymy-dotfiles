@@ -2,12 +2,6 @@
 # .bash_login
 ###############################################################################
 
-#TODO 
-#   - Add external IP
-#   - Remove    
-
-# IS DFC TOO WIDE ??
-
 LIGHTBLUE=$(tput setaf 4)
 LIGHTGREEN='\[\e[1;32m\]'
 WHITE=$(tput sgr0)
@@ -18,20 +12,27 @@ if [ -f ~/.bash_functions ]; then
 fi
 
 clear
-neofetch --disable packages resolution theme icons --color_blocks off
-unbuffer dfc -d -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs,fuse | tail -n +2 |  sort | awk '!seen[$1]++'
+if ! [ -x "$(command -v neofetch)" ]; then
+  neofetch --disable packages resolution theme icons --color_blocks off
+fi
+if ! [ -x "$(command -v dfc)" ]; then
+  unbuffer dfc -d -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs,fuse | tail -n +2 |  sort | awk '!seen[$1]++'
+fi
 echo ""
 
-PUBLICIP=$(curl -s ifconfig.co 2> /dev/null)
-VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
+if ! [ -x "$(command -v curl)" ]; then
+  PUBLICIP=$(curl -s ifconfig.co 2> /dev/null)
+  VALIDIP=$(echo $PUBLICIP | grep -E "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)")
 
-if [ -n "$VALIDIP" ]; then
+  if [ -n "$VALIDIP" ]; then
     REVDNS=$(host $VALIDIP 2> /dev/null | awk '{ print substr($NF, 1, length($NF)-1)}')
     printf 'Public IP = %s %80s\n' "${LIGHTBLUE}$PUBLICIP${WHITE}" "Reverse DNS = ${LIGHTBLUE}$REVDNS${WHITE}" # Right alignment of REVDNS
     #echo "Public IP = $PUBLICIP            $REVDNS"
-else
+  else
     echo "No public ip"
+  fi
 fi
+
 echo "Network interfaces :"
 IFACES=$(ifconfig 2>/dev/null | grep "flags=" | tr ':' ' '| awk '{print $1}' | grep -v lo)
 for IFACE in $IFACES; do
@@ -46,4 +47,6 @@ __isssh
 echo "Users logged in : $(w -f -i -s -h | awk '{print $1}' | sort | uniq -c | tr '\n' ' ' | grep -o '[^$(printf '\t') ].*')"
 echo "There are $(ps aux | tail -n +2 | wc -l) processes running."
 
-source $HOME/.profile
+if [ -f ~/..profile ]; then
+    . ~/.profile
+fi
