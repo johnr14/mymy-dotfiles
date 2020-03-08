@@ -72,7 +72,11 @@ esac
 #######################
 # Use realuser for homedir so it can work when in "sudo su"
 
-DOTFILES_PATH="/home/$(logname)"
+if [ "$(logname)" = "root" ]; then
+    DOTFILES_PATH="$HOME"
+else
+    DOTFILES_PATH="/home/$(logname)"
+fi
 
 if [ -f $DOTFILES_PATH/.bash_aliases ]; then
     . $DOTFILES_PATH/.bash_aliases
@@ -280,30 +284,31 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
     fi
     export HISTTIMEFORMAT=""
     
-    if (( $EUID == 0 )); then
-        echo "HERE@!"
+    export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
+    export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
+ 
+    #HISTFILE=~/.history/history.$$
+   # export PROMPT_COMMAND='history -a; history -c; history -r;'
+
+else
+    # we are user root
+    if [ "$(logname)" = "root" ]; then
+        # This means mymy-bash was installed in root user !
+        export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /root/.bash_history-merged'
+        export HISTFILE="/root/.bash_histories/$UNIQTTYNAME" # reset the file
+    else
+        # we are root but it was thru a sudo su
+        # check that bash_functions is loaded
         if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then 
             :
         else 
             echo "reloading bashrc"
             . $DOTFILES_PATH/.bashrc
         fi
-    else
 
-        export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> $HOME/.bash_history-merged'
-        export HISTFILE="$HOME/.bash_histories/$UNIQTTYNAME" # reset the file
-    #else # We are root
-        # Check if in sudo
-        # TODO
+        export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
+        export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
     fi
-
-
-    #HISTFILE=~/.history/history.$$
-   # export PROMPT_COMMAND='history -a; history -c; history -r;'
-   #echo ""
-   :
-else
-    :
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
 
