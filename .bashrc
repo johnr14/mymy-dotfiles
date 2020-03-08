@@ -15,6 +15,7 @@
 #Use .bashrc from sudoed account
 #
 # FIXME
+# in "sudo su" bash doesn't reload bash_functions
 # when doing a sudo, pass $SSH_CLIENT
 #
 #
@@ -46,6 +47,9 @@ case $- in
       *) return;;
 esac
 
+
+
+
 #############################
 # First run check
 #############################
@@ -66,19 +70,23 @@ esac
 #######################
 # Load files
 #######################
+# Use realuser for homedir so it can work when in "sudo su"
 
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
+DOTFILES_PATH="/home/$(logname)"
+
+if [ -f $DOTFILES_PATH/.bash_aliases ]; then
+    . $DOTFILES_PATH/.bash_aliases
 fi
 
-if [ -f ~/.bash_functions ]; then
-    . ~/.bash_functions
+if [ -f $DOTFILES_PATH/.bash_functions ]; then
+    . $DOTFILES_PATH/.bash_functions
 fi
 
 # FIXME file was not created !
-if [ -f ~/.bash_autocompletition ]; then
-    . ~/.bash_autocompletition
+if [ -f $DOTFILES_PATH/.bash_autocompletition ]; then
+    . $DOTFILES_PATH/.bash_autocompletition
 fi
+
 
 #######################
 # Set language
@@ -129,7 +137,7 @@ complete -cf sudo
 # Set path
 #######################
 
-PATH="~/bin:$PATH"
+PATH="$DOTFILES_PATH/bin:$PATH"
 
 # for flatpak
 XDG_DATA_DIRS="${XDG_DATA_DIRS:-$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/}"
@@ -271,19 +279,36 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
         fi
     fi
     export HISTTIMEFORMAT=""
-    export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> $HOME/.bash_history-merged'
-    export HISTFILE="$HOME/.bash_histories/$UNIQTTYNAME" # reset the file
-else # We are root
-    # Check if in sudo
-    # TODO
+    
+    if (( $EUID == 0 )); then
+        echo "HERE@!"
+        if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then 
+            :
+        else 
+            echo "reloading bashrc"
+            . $DOTFILES_PATH/.bashrc
+        fi
+    else
+
+        export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> $HOME/.bash_history-merged'
+        export HISTFILE="$HOME/.bash_histories/$UNIQTTYNAME" # reset the file
+    #else # We are root
+        # Check if in sudo
+        # TODO
+    fi
+
+
     #HISTFILE=~/.history/history.$$
    # export PROMPT_COMMAND='history -a; history -c; history -r;'
-   echo ""
+   #echo ""
+   :
+else
+    :
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
 
 # check if folder .logs exist
-#export PROMPT_COMMAND='history -a; history -c; history -r; if [ "$(id -u)" -ne 0 ]; then echo "$(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(history 1)" >> ~/.logs/bash-history-$(date "+%Y-%m-%d").log; fi'
+#export PROMPT_COMMAND='history -a; history -c; history -r; if [ "$(id -u)" -ne 0 ]; then echo "$(date "+%Y-%m-%d.%H:%M:%S") $(pwd) $(__history1)" >> ~/.logs/bash-history-$(date "+%Y-%m-%d").log; fi'
 
 
 
