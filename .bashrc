@@ -257,6 +257,10 @@ export PROMPT_COMMAND='history -a; history -c; history -r;'
 # make sure directory is created
 mkdir -p $HOME/.bash_histories 
 
+# Get terminal name
+
+TERMNAME="$(ps -p $(ps -p $$ -o ppid=) o args=) --version | sed 's/[1-9.-\ ].*//')"
+
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
 if [ "$(id -u)" -ne 0 ]; then # We are not root
     if [ -n "$TMUX" ] && [ ! -n "$SSH_CLIENT" ]; then # We are in a TMUX but not from a ssh client 
@@ -264,6 +268,7 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
         UNIQTTY="tmux_$(tmuxcpa)"
         UNIQTTYNAME="tmux_$(tmuxcpa)"
     elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        #We are in a SSH login and not in tmux 
         REMOTEIP=$(echo $SSH_CLIENT | awk '{print $1}')
         if [ -n "$TMUX" ]; then
             UNIQTTY="$REMOTEIP@ssh>tmux_$(tmuxcpa)" # keep per pane also
@@ -273,15 +278,28 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
             UNIQTTYNAME="pts_$(ttyc)"
         fi
     else 
+        #We are not in tmux or ssh
         INPTS=$(tty | grep pts)
         if [ ! -z $INPTS ]; then 
+            # We have a pts
             UNIQTTY="pts=$(ttyc)"
-            UNIQTTYNAME="pts_$(ttyc)"
+            if [ -n "$TERMNAME" ]; then
+                UNIQTTYNAME="${TERMNAME}_pts_$(ttyc)"
+            else
+                UNIQTTYNAME="pts_$(ttyc)"
         else
+            # Not using pts, then a real tty
             UNIQTTY="tty=$(ttyc)"
-            UNIQTTYNAME="tty_$(ttyc)"
+
+            if [ -n "$TERMNAME" ]; then
+                UNIQTTYNAME="${TERMNAME}_tty_$(ttyc)"
+            else
+                UNIQTTYNAME="tty_$(ttyc)"
+            fi
+
         fi
     fi
+
     export HISTTIMEFORMAT=""
     
     export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
