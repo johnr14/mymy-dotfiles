@@ -252,13 +252,14 @@ export PROMPT_COMMAND='history -a; history -c; history -r;'
 # TODO : 
 #       
 #       SEARCH HISTORY : by pwd, by cmd, by time, by tmuxname, by hostname
+#       View pwd history
 #       
 
 # make sure directory is created
 mkdir -p $HOME/.bash_histories 
 
 # Get terminal name
-
+# https://askubuntu.com/questions/476641/how-can-i-get-the-name-of-the-current-terminal-from-command-line
 TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version | sed 's/[1-9.-\ ].*//')"
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
@@ -266,19 +267,33 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
     if [ -n "$TMUX" ] && [ ! -n "$SSH_CLIENT" ]; then # We are in a TMUX but not from a ssh client 
         #Let's have a history per pane of tmux
         UNIQTTY="tmux_$(tmuxcpa)"
-        UNIQTTYNAME="tmux_$(tmuxcpa)"
+
+        if [ -n "$TERMNAME" ]; then
+            UNIQTTYNAME="$TERMNAME_tmux_$(tmuxcpa)"
+        else
+            UNIQTTYNAME="tmux_$(tmuxcpa)"
+        fi
     elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
         #We are in a SSH login and not in tmux 
         REMOTEIP=$(echo $SSH_CLIENT | awk '{print $1}')
         if [ -n "$TMUX" ]; then
             UNIQTTY="$REMOTEIP@ssh>tmux_$(tmuxcpa)" # keep per pane also
-            UNIQTTYNAME="tmux_$(tmuxcpa)"
+            if [ -n "$TERMNAME" ]; then
+                UNIQTTYNAME="$TERMNAME_tmux_$(tmuxcpa)"
+            else
+                UNIQTTYNAME="tmux_$(tmuxcpa)"
+            fi
         else
             UNIQTTY="$REMOTEIP@ssh>pts_$(ttyc)"
-            UNIQTTYNAME="pts_$(ttyc)"
+            if [ -n "$TERMNAME" ]; then
+                UNIQTTYNAME="$TERMNAME_pts_$(ttyc)"
+            else
+                UNIQTTYNAME="pts_$(ttyc)"
+            fi
         fi
     else 
         #We are not in tmux or ssh
+
         INPTS=$(tty | grep pts)
         if [ ! -z $INPTS ]; then 
             # We have a pts
@@ -302,8 +317,9 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
     fi
 
     export HISTTIMEFORMAT=""
-    
-    export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
+
+    # We write direcly to the merged history file from the command prompt 
+    export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
     export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
  
     #HISTFILE=~/.history/history.$$

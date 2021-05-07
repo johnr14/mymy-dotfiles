@@ -274,6 +274,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [[ -n $1 ]]; then
     cat $HOME/.bash_history-merged | grep $1
+else
+    tail -n 15 $HOME/.bash_history-merged 
 fi
 
 #cat .bash_history-merged | awk -vFPAT='("[^"]+")' '$2 == "\"pts=12\"" {print $0}'
