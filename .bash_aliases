@@ -119,8 +119,8 @@ alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' 
 
 
 if [ -f $HOME/.bash_history-merged ]; then
-alias hh="__hh" # history - return last 35 cmd run FIXME
-#alias h
+alias hh="__hh" # history - return last 15 cmd run; can also pass argument to grep output
+alias hhpwd="__hhpwd" # hhpwd - return last directories where commands where run
 fi
 #######################################
 # COLORIZE
