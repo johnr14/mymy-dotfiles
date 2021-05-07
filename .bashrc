@@ -259,7 +259,7 @@ mkdir -p $HOME/.bash_histories
 
 # Get terminal name
 
-TERMNAME="$(ps -p $(ps -p $$ -o ppid=) o args=) --version | sed 's/[1-9.-\ ].*//')"
+TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version | sed 's/[1-9.-\ ].*//')"
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
 if [ "$(id -u)" -ne 0 ]; then # We are not root
@@ -287,6 +287,7 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
                 UNIQTTYNAME="${TERMNAME}_pts_$(ttyc)"
             else
                 UNIQTTYNAME="pts_$(ttyc)"
+            fi
         else
             # Not using pts, then a real tty
             UNIQTTY="tty=$(ttyc)"
