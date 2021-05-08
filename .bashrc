@@ -19,7 +19,7 @@
 # when doing a sudo, pass $SSH_CLIENT
 #
 # Dependency
-# neofetch xclip net-tools dnsutils(host,dig)
+# dfc expect neofetch xclip net-tools dnsutils(host,dig)
 #
 # Personal notes for github
 # If README.md was updated on github : 

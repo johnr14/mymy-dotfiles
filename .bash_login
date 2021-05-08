@@ -1,7 +1,7 @@
 ###############################################################################
 # .bash_login
 ###############################################################################
-
+# unbuffer is needed to keep colors, provided by expect
 LIGHTBLUE=$(tput setaf 4)
 LIGHTGREEN='\[\e[1;32m\]'
 WHITE=$(tput sgr0)
@@ -12,10 +12,10 @@ if [ -f ~/.bash_functions ]; then
 fi
 
 clear
-if [ -x "$(command -v neofetch)" ]; then
+if [ -x "$(command -v /usr/bin/neofetch)" ]; then
   neofetch --disable packages resolution theme icons --color_blocks off
 fi
-if [ -x "$(command -v dfc)" ]; then
+if [ -x "$(command -v /usr/bin/dfc)" ]; then
   unbuffer dfc -d -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,ntfs,fat,xfs,nfs,fuse | tail -n +2 |  sort | awk '!seen[$1]++'
 fi
 echo ""
@@ -33,7 +33,7 @@ if [ -x "$(command -v curl)" ]; then
   fi
 fi
 
-echo "Network interfaces :"
+#echo "Network interfaces :"
 IFACES=$(ifconfig 2>/dev/null | grep "flags=" | tr ':' ' '| awk '{print $1}' | grep -v lo)
 for IFACE in $IFACES; do
     # Check if ip valid https://www.shellhacks.com/regex-find-ip-addresses-file-grep/
