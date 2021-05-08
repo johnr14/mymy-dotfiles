@@ -94,7 +94,8 @@ alias alias-viewcmd="" # alias - Show cmd for an alias
 
 # TODO expand alias 
 
-
+# TODO
+#alias pastealias='' # pastealias : Paste on the prompt an alias line so that you can edit it
 
 ###############################################################
 # BACKUP RELATED
@@ -696,7 +697,7 @@ alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print
 alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" # List all interfaces and their IPs
 alias netinfo='__netinfo' # Show current network information
 alias whatsmyip='__whatsmyip' # IP address lookup
-alias whatsmyreversedns="host $(curl -s ifconfig.co) | awk '{ print substr(\$NF, 1, length(\$NF)-1)}'"
+alias whatsmyreversedns="host $(curl -s ifconfig.co) | awk '{ print substr(\$5, 1, length(\$5)-1)}'"
 
 
 # Bandwidth for eth0 #TODO make function to accept interface parameter ? # FIXME

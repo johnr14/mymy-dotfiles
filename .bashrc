@@ -18,6 +18,8 @@
 # in "sudo su" bash doesn't reload bash_functions
 # when doing a sudo, pass $SSH_CLIENT
 #
+# Dependency
+# neofetch xclip net-tools dnsutils(host,dig)
 #
 # Personal notes for github
 # If README.md was updated on github : 
@@ -601,7 +603,10 @@ PS1+="${PR_OFF}"
 #SCREEN NAME IF IN SCREEN/TMUX and # of screens/tmux unconnected; GIT; RED # if root; time of last cmd;
 #Is X configured (to where?);
 
-
+#https://unix.stackexchange.com/questions/60459/how-to-make-bash-put-prompt-on-a-new-line-after-cat-command
+#shopt -s promptvars
+#PS1='$(printf "%$((COLUMNS-1))s\r")'$PS1
+# this seems to cause some bugs, must investigate more ...
 
 ###############################################################################
 # Informations and nice hacks
