@@ -284,7 +284,7 @@ fi
 
 # Print history of where commands where executed
 __hhpwd() {
-    cat $HOME/.bash_history-merged | awk '{print $4}' | uniq | sed 's/\"//g'
+    cat $HOME/.bash_history-merged | awk '{print $4}' | sort | uniq | sed 's/\"//g'
 }
 
 #######################################
