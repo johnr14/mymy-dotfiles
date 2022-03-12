@@ -262,7 +262,9 @@ mkdir -p $HOME/.bash_histories
 
 # Get terminal name
 # https://askubuntu.com/questions/476641/how-can-i-get-the-name-of-the-current-terminal-from-command-line
-TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version | sed 's/[1-9.-\ ].*//')"
+TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version 2> /dev/null | sed 's/[1-9.-\ ].*//')"
+#FIXME IN CASE IT IS EMPTY
+
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
 if [ "$(id -u)" -ne 0 ]; then # We are not root
