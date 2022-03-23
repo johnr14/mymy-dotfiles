@@ -75,7 +75,11 @@ esac
 # Use realuser for homedir so it can work when in "sudo su"
 
 if [ "$(logname)" = "root" ]; then
-    DOTFILES_PATH="$HOME"
+  if [ -f /root/.bash_aliases ]; then 
+      DOTFILES_PATH="$HOME"
+  else 
+    DOTFILES_PATH="/home/$(logname)"
+  fi
 else
     DOTFILES_PATH="/home/$(logname)"
 fi
@@ -201,7 +205,7 @@ set bell-style none
 if (( $EUID == 0 )); then
     # set a 5 min timeout policy for bash shell
     TMOUT=300
-    readonly TMOUT 2> /dev/null 
+    #readonly TMOUT 2> /dev/null 
     export TMOUT 2> /dev/null 
 fi
 
@@ -323,6 +327,7 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
     export HISTTIMEFORMAT=""
 
     # We write direcly to the merged history file from the command prompt 
+
     export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
     export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
  
@@ -339,14 +344,18 @@ else
         # we are root but it was thru a sudo su
         # check that bash_functions is loaded
         if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then 
-            :
+            echo "reloading bash_functions"
+            . /home/$(logname)/.bash_functions 
         else 
             echo "reloading bashrc"
             . $DOTFILES_PATH/.bashrc
+            #. /home/$(logname)/.bashrc
         fi
-
-        export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
-        export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
+        mkdir -p /root/.bash_histories # make sure the directory exist
+        export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /root/.bash_history-merged'
+        export HISTFILE="/root/.bash_histories/$UNIQTTYNAME" # reset the file
+        #export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
+        #export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
     fi
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
@@ -391,6 +400,9 @@ fi
 ###############
 # SSH
 ###############
+
+# https://github.com/alexshvid/sshrc
+# BRING YOUR bashrc with you on a connected host !!!! TODO
 
 function is_ssh {
 #case "/$(ps -p $PPID -o comm=)" in
@@ -516,8 +528,10 @@ PR_OFF="\[\033[m\]"
 ###############
 # Variables
 ###############
-
+#striked colors
 SGREEN='\[\e[9;32m\]'
+SYELLOW='\[\e[9;33m\]'
+
 
 HOST="\h"
 USERNAME="$USER"
@@ -550,10 +564,10 @@ fi
 
 #Check if running as root
 if (( $EUID == 0 )); then
-    USERNAME="${SGREEN}$REALUSER${OFF}>${RED}$USER"
-    PROMPTSYMBOL="${RED}#"
+    USERNAME="${SYELLOW}$REALUSER${OFF}>${RED}$USER"
+    PROMPTSYMBOL="\[${RED}\]#"
 else
-    PROMPTSYMBOL="${GREEN}$"
+    PROMPTSYMBOL="\[${GREEN}\]$"
     if [[ ! -z $REALUSER && $REALUSER != $USER ]]; then 
         USERNAME="${SGREEN}$REALUSER${OFF}${WHITE}>${LIGHTYELLOW}$USER${OFF}"
     else
@@ -568,35 +582,42 @@ fi
 ###############
 
 # COLORS SELECTION :
-# FIXME 
+# FIXME
+#   IN BASH
+# (ps -o comm= -p "$PPID")
+# tty
+#   IN X
+# basename "/"$(ps -o cmd -f -p $(cat /proc/$(echo $$)/stat | cut -d \  -f 4) | tail -1 | sed 's/ .*$//')
 #   IN SSH
 #   IN SCREEN
 #   IN TMUX
 #   LAST CMD RUNTIME
 #   LAST CMD RETURN CODE
 
-
+UPTIME_STR=$(awk '{print int($1/86400)"d "int($1%86400/3600)"h "int(($1%3600)/60)"m "int($1%60)"s"}' /proc/uptime)
 
 PS1="${PR_OFF}"
-PS1+="\[\e[30;1m\](\D{%Y.%m.%d} \t\[\e[30;1m\])"
+#Timestamp
+PS1+="\[${PR_WHITE}\](\[${PR_LIGHTCYAN}\]\D{%Y.%m.%d} \t\[${PR_WHITE}\])"
 PS1+=""
-#PS1+="\[\e[30;1m\](\[\e[36;1m\]CPU:\$(uptime|awk '{ print $(NF-2) } ' | sed 's/,//')" # CPU FIXME USE UPTIME uptime|awk '{ print $(NF-2) }'
+PS1+="\[${PR_WHITE}\](\[${PR_LIGHTYELLOW}\]${UPTIME_STR}\[${PR_WHITE}\])" # CPU FIXME USE UPTIME uptime|awk '{ print $(NF-2) }'
+
 #PS1+="\[${DARKGRAY}\]|\[${MAGENTA}\]Jobs:\j" #Jobs
-PS1+="\[${PR_DARKGRAY}\](\[${PR_MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
-PS1+="\[${PR_DARKGRAY}\]|\[${PR_MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
-PS1+="\[\e[30;1m\])"
-PS1+="\[\e[30;1m\](\[\e[32;1m\]\$(df -h / | tail -1 | awk 'END {print \"Root:\" \$3 \"/\" \$2}')"
-PS1+="\[\e[30;1m\]"
-PS1+=")(\[\e[32;1m\]\$(ls -ld */ 2>/dev/null | wc -l) dir, \$(find . -maxdepth 1 -type f 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files\[\e[30;1m\])\n" #, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
+PS1+="\[${PR_WHITE}\](\[${PR_MAGENTA}\]Net:\$(cat /proc/net/tcp | wc -l)"  # Network Connections
+PS1+="\[${PR_WHITE}\]|\[${PR_MAGENTA}\]Users:\$(w -f -i -s -h | awk '{print \$1}' | sort | uniq -c | sed 's/^ *//' | sed 's/  */-/g' | tr '\n' ';'  | sed 's/;$//' )"
+PS1+="\[${PR_WHITE}\])"
+PS1+="\[${PR_WHITE}\](\[\e[32;1m\]\$(df -h / | tail -1 | awk 'END {print \"Root:\" \$3 \"/\" \$2}')"
+PS1+="\[${PR_WHITE}\]"
+PS1+=")(\[\e[32;1m\]\$(ls -ld */ 2>/dev/null | wc -l) dir, \$(find . -maxdepth 1 -type f 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files\[${PR_WHITE}\])\n" #, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
 #PS1+=")(\[\e[32;1m\]\$(find . -maxdepth 1 -t d 2>/dev/null | wc -l) dir, \$(/bin/ls -1 2>/dev/null| /usr/bin/wc -l | /bin/sed 's: ::g') files, \$(/bin/ls -lah | /bin/grep -m 1 total | /bin/sed 's/total //')b\[\e[30;1m\]) \n"
 
-## {USER@HOST:/PATH}
-PS1+=" ${PR_DARKGRAY}{"
-PS1+="${USERNAME}"
-PS1+="${PR_LIGHTCYAN}@${PR_LIGHTGREEN}$HOST"
+## {USER@HOSTNAME:/PATH}
+PS1+=" ${PR_WHITE}{"
+PS1+="\[${PR_YELLOW}\]${USERNAME}"
+PS1+="${PR_LIGHTCYAN}@${PR_LIGHTGREEN}$HOSTNAME"
 PS1+="${PR_PURPLE}$MULTNAME" # Append screen name if in a screen
 PS1+="${PR_LIGHTBLUE}:$DIR" #PATH
-PS1+="${PR_DARKGRAY}} ${PR_PROMPTSYMBOL} "
+PS1+="\[${PR_WHITE}\]} ${PROMPTSYMBOL} "
 PS1+="${PR_OFF}"
 
 #PS1+=' \[\033[m\]{\[\e[32;1m\]\u\[\e[34;1m\]@\[\e[36;1m\]\H:\[\e[34;1m\]\w\[\033[m\]} \[\e[32;1m\]\$ \[\e[m\]\[\e[0;32m\]'

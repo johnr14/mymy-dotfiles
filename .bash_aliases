@@ -118,7 +118,6 @@ alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' 
 #alias hs='history | grep -i ' # 
 alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr" # history - shows most  FIXME
 
-
 if [ -f $HOME/.bash_history-merged ]; then
 alias hh="__hh" # history - return last 15 cmd run; can also pass argument to grep output
 alias hhpwd="__hhpwd" # hhpwd - return last directories where commands where run
@@ -148,7 +147,9 @@ alias chkcmd="type -t" # Check to see if a command is aliased, a file, or a buil
 alias colorslist="set | egrep 'COLOR_\w*'" # Lists all the used colors
 alias exit='clear; exit'
 alias lspath='echo -e ${PATH//:/\\n}' # List paths in $PATH
-alias reload='source $HOME/.bashrc'     # Reload bashrc 
+
+#alias reload='source $HOME/.bashrc'     # Reload bashrc 
+alias reload='source /home/$(logname)/.bashrc'     # Reload bashrc 
 alias less='less -R'
 
 alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
