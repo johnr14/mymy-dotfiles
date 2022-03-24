@@ -67,12 +67,15 @@ esac
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur
 
+if [ ! -d $HOME/.bash_histories ]; then
 clear
 echo ""
 echo "This is your first run of mymy-dotfiles"
 echo "A lot of aliases are added for ease of use. To search, use alias-search WORD"
 echo "Also, it will not work with non english system. To enforce it, it sets LC_ALL=C"
-
+echo ""
+echo ""
+fi
 
 
 
@@ -233,11 +236,6 @@ fi
 
 
 
-
-
-
-
-
 #############################
 # History control
 #############################
@@ -247,7 +245,7 @@ export HISTSIZE=100000 # big big history
 export HISTFILESIZE=1000000 # big big history filesize
 
 export HISTCONTROL="erasedups:ignoreboth:ignoredups" # Stop bash from caching duplicate lines.
-export HISTIGNORE="&:[ ]*:exit:ls:clear:df:dfc" # Remove from history
+export HISTIGNORE="&:[ ]*:exit:ls:clear:df:dfc:pwd" # Remove from history
 
 shopt -s histappend                      # append to history, don't overwrite it
 shopt -s cmdhist                         #This lets you save multi-line commands to the history as one command.
@@ -278,8 +276,10 @@ mkdir -p $HOME/.bash_histories
 
 # Get terminal name
 # https://askubuntu.com/questions/476641/how-can-i-get-the-name-of-the-current-terminal-from-command-line
-TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version 2> /dev/null | sed 's/[1-9.-\ ].*//')"
+#TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version 2> /dev/null | sed 's/[1-9.-\ ].*//')"
+TERMNAME="$(basename $(ps -p $(ps -p $$ -o ppid=) o args=))"
 #FIXME IN CASE IT IS EMPTY
+
 
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
@@ -288,9 +288,9 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
         #Let's have a history per pane of tmux
         UNIQTTY="tmux_$(tmuxcpa)"
 
-        if [ -n "$TERMNAME" ]; then
-            UNIQTTYNAME="$TERMNAME_tmux_$(tmuxcpa)"
-        else
+        if [ "$TERMNAME" == "tmux" ]; then
+            UNIQTTYNAME="${TERMNAME}_$(tmuxcpa)"
+    else
             UNIQTTYNAME="tmux_$(tmuxcpa)"
         fi
     elif [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
@@ -313,7 +313,6 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
         fi
     else 
         #We are not in tmux or ssh
-
         INPTS=$(tty | grep pts)
         if [ ! -z $INPTS ]; then 
             # We have a pts
