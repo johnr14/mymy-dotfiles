@@ -1,0 +1,16 @@
+.*
+*
+!.gitignore
+!.bash_aliases
+!.bash_completition
+!.bash_functions
+!.bash_login
+!.bash_logout
+!.bashrc
+!.profile
+!.screenrc
+!.tmux.conf
+!.tmux.remote
+!.tmux.renew.sh
+!.vimrc
+!README.md
