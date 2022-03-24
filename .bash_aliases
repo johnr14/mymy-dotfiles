@@ -693,7 +693,8 @@ alias flushdns='sudo service nscd restart ' # Flush DNS entries
 # IPs and interfaces
 #FIXME alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" # Return public IP
 alias myip="curl -s ifconfig.co"
-alias mydns="nslookup . ifconfig.co | grep Name | awk '{print \$2}'" # Return public DNS FIXME
+#alias mydns="nslookup . ifconfig.co | grep Name | awk '{print \$2}'" # Return public DNS FIXME
+alias mydns="nslookup google.com | grep ^Server | awk '{print $2}'"
 alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" # List all interfaces IPs
 alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" # List all interfaces and their IPs
 alias netinfo='__netinfo' # Show current network information
@@ -735,10 +736,11 @@ debug_http () { curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time
 http_headers () { curl -I -L $@ ; } # curl - http_headers: get just the HTTP headers from a web page (and its redirects)
 
 #Does it works with interfaces aliases ??
-alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" #Return public IP
-alias mydns="nslookup . ifcfg.me | grep Name | awk '{print \$2}'" #Return public DNS
-alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" #List all interfaces IPs
-alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" #List all interfaces and their IPs
+#Depricated
+#alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" #Return public IP
+#alias mydns="nslookup . ifcfg.me | grep Name | awk '{print \$2}'" #Return public DNS
+#alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" #List all interfaces IPs
+#alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" #List all interfaces and their IPs
 
 
 
