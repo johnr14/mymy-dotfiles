@@ -239,9 +239,6 @@ if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
     export TMOUT 2> /dev/null
 fi
 
-
-
-
 #############################
 # History control
 #############################
@@ -284,8 +281,6 @@ mkdir -p $HOME/.bash_histories
 # https://askubuntu.com/questions/476641/how-can-i-get-the-name-of-the-current-terminal-from-command-line
 #TERMNAME="$($(ps -p $(ps -p $$ -o ppid=) o args=) --version 2> /dev/null | sed 's/[1-9.-\ ].*//')"
 TERMNAME="$(basename $(ps -p $(ps -p $$ -o ppid=) o args=))"
-#FIXME IN CASE IT IS EMPTY
-
 
 
 #NOTICE THE WEIRD NAMING, ONLY WORKS ON UNIX
@@ -347,9 +342,6 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
 
     export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
     export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
- 
-    #HISTFILE=~/.history/history.$$
-   # export PROMPT_COMMAND='history -a; history -c; history -r;'
 
 else
     # we are user root
@@ -361,10 +353,8 @@ else
         # we are root but it was thru a sudo su
         # check that bash_functions is loaded
         if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then 
-            echo "reloading bash_functions"
             . /home/$(logname)/.bash_functions 
         else 
-            echo "reloading bashrc"
             . $DOTFILES_PATH/.bashrc
             #. /home/$(logname)/.bashrc
         fi
