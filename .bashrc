@@ -35,6 +35,9 @@
 #To reevaluate values, you must put a \ before the $() ; so it isn't expanded immediately
 #https://stackoverflow.com/questions/5379986/why-doesnt-my-bash-prompt-update
 
+
+# $PATH seem to have dupplicates
+
 ###############################################################################
 # General configuration
 ###############################################################################
@@ -63,6 +66,14 @@ esac
 #       Download from github all files needed
 #       If successfull, create file .bashrc-mymybash
 #           File will hold personal variables in the futur
+
+clear
+echo ""
+echo "This is your first run of mymy-dotfiles"
+echo "A lot of aliases are added for ease of use. To search, use alias-search WORD"
+echo "Also, it will not work with non english system. To enforce it, it sets LC_ALL=C"
+
+
 
 
 ###############################
@@ -103,7 +114,7 @@ fi
 #######################
 
 export LANG=en_US.UTF-8
-
+export LC_ALL=C
 
 
 #######################
@@ -147,10 +158,11 @@ complete -cf sudo
 # Set path
 #######################
 
+#TODO CHECK IF ALREADY EXISTING !!
 PATH="$DOTFILES_PATH/bin:$PATH"
 
 # for flatpak
-XDG_DATA_DIRS="${XDG_DATA_DIRS:-$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/}"
+XDG_DATA_DIRS="${XDG_DATA_DIRS:-$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share/:/usr/local/share/:/usr/share/}" #"
 
 #######################
 # Colors

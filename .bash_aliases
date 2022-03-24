@@ -85,11 +85,11 @@ LIGHTNING_BOLT="⚡"
 ###############################################################
 
 
-alias alias-less='cat $HOME/.bash_aliases | grep "^alias" | less -R' # Show alias
-alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
-alias alias-reload="source ~/.bash_aliases"  # alias - Reload only aliases
+alias alias-less='cat /home/$(logname)/.bash_aliases | grep "^alias" | less -R' # Show alias
+#alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
+alias alias-reload="source /home/$(logname)/.bash_aliases"  # alias - Reload only aliases
 alias alias-search='__aliassearch' # Search for alias by keyword
-alias alias-viewcmd="" # alias - Show cmd for an alias
+alias alias-viewcmd="cat /home/$(logname)/.bash_aliases | grep -i" # alias - Show cmd for an alias
 #cat .bash_aliases | grep "^alias" | sort
 
 # TODO expand alias 
@@ -103,7 +103,7 @@ alias alias-viewcmd="" # alias - Show cmd for an alias
 
 #alias bkbash='__bkbash' # Backup bash configuration files
 
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias config='/usr/bin/git --git-dir=/home/$(logname)/.cfg/ --work-tree=/home/$(logname)'
 
 ###############################################################
 # Bash related                                           
@@ -118,10 +118,11 @@ alias mostused="history | awk '{print \$2}' | awk 'BEGIN {FS=\"|\"}{print \$1}' 
 #alias hs='history | grep -i ' # 
 alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr" # history - shows most  FIXME
 
-if [ -f $HOME/.bash_history-merged ]; then
+#if [ -f /home/$(logname)/.bash_history-merged ]; then # Removed the if as it should be created
 alias hh="__hh" # history - return last 15 cmd run; can also pass argument to grep output
 alias hhpwd="__hhpwd" # hhpwd - return last directories where commands where run
-fi
+#fi
+
 #######################################
 # COLORIZE
 #######################################
@@ -134,8 +135,6 @@ alias grep='grep --color=auto -i'   # Colorized grep
 alias egrep='egrep --color=auto -i' # Colorized egrep
 alias fgrep='fgrep --color=auto -i' # Colorized fgrep
 
-
-
 ###############################
 # Misc                        
 ###############################
@@ -144,7 +143,7 @@ alias fgrep='fgrep --color=auto -i' # Colorized fgrep
 
 alias beep='echo -en "\007"' # Beep
 alias chkcmd="type -t" # Check to see if a command is aliased, a file, or a built-in command
-alias colorslist="set | egrep 'COLOR_\w*'" # Lists all the used colors
+#alias colorslist="set | egrep 'COLOR_\w*'" # Lists all the used colors # unused as colors are not yet starting with COLORS_
 alias exit='clear; exit'
 alias lspath='echo -e ${PATH//:/\\n}' # List paths in $PATH
 
@@ -153,7 +152,7 @@ alias reload='source /home/$(logname)/.bashrc'     # Reload bashrc
 alias less='less -R'
 
 alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
-alias ttyc="tty | sed -e 's/\/dev\/\(pts\|tty\)\///' | sed -e 's/\/dev\///'" # tty - get current tty number, works in direct terminal or ssh
+alias ttycurrent="tty | sed -e 's/\/dev\/\(pts\|tty\)\///' | sed -e 's/\/dev\///'" # tty - get current tty number, works in direct terminal or ssh
 
 
 # To see if a command is aliased, a file, or a built-in command
@@ -164,6 +163,7 @@ alias c='clear' # Clear the screen
 alias cla='clear; la' # Clear screen and list all
 alias cld='clear; lsd' # Clear screen and list directories
 alias cls='clear; ls' # Clear screen and list
+alias cdu='clear; du -hcs *' # Clear screen and list du recursive file and directory size
 
 #Terminal related
 alias fix='echo -e "\033c"' # Fix terminal when weird caracters replaced prompt; after cat a binary file
@@ -188,8 +188,7 @@ alias randpass16='__randpassgen 16' # Generate a random password of size 16
 alias randpass32='__randpassgen 32' # Generate a random password of size 32
 alias randpass64='__randpassgen 64' # Generate a random password of size 64
 
-# FIXME
-randpassgen() { < /dev/urandom tr -dc A-Za-z0-9_ | head -c$1 ; echo; }
+#randpassgen() { < /dev/urandom tr -dc A-Za-z0-9_ | head -c$1 ; echo; }
 
 ###############################################################
 # CODING RELATED
@@ -211,15 +210,13 @@ alias gcup='gc && gup' # Git commit and git up and push
 
 alias gitlog-resumed="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" # git - git log overview of commits for a file 
 alias gitlog-view="git log --follow -p -- " # git - view all changes from commits on a file
-#alias gitrevert="git revert"
-# alias gitshow="" 
 
 ###############################################################
 # COMPRESSION AND DECOMPRESSION
 ###############################################################
 
 # Compressed files
-alias ex='__ex' # Extract compressed file by matching extension
+alias extract='__ex' # Extract compressed file by matching extension
 
 ###############################################################
 # DESKTOP RELATED
@@ -255,14 +252,13 @@ touch ~/.bash_mymy_bookmarks && source ~/.bash_mymy_bookmarks
 alias ax="chmod --preserve-root a+x" # make executable
 alias or="chmod --preserve-root o+r" # make readable by all
 alias ux="chmod --preserve-root u+x" # make user executable
-alias 000='chmod --preserve-root -R 000' # TODO
-alias 644='chmod --preserve-root -R 644' # TODO
-alias 666='chmod --preserve-root -R 666' # TODO
-alias 755='chmod --preserve-root -R 755' # TODO
-alias 777='chmod --preserve-root -R 777' # TODO
+alias gr="chmod --preserve-root o+r" # make readable by group
+alias ur="chmod --preserve-root og-rwx" # make readable by user only
+alias gw="chmod --preserve-root g+rw" # make writable by group
 
 # Counting
 alias countfiles="for t in files links directories; do echo \`find . -type \${t:0:1} | wc -l\` \$t; done 2> /dev/null" # Count all files (recursively) in the current folder
+alias countfilesd="find . -maxdepth 1 -type d -exec sh -c \"cd {} && pwd && \${BASH_ALIASES[countfiles]} && echo \" \;" # Count all files (recursively) and display per directory
 alias dirsize="du -shx * .[a-zA-Z0-9_]* 2> /dev/null"
 
 # Directories
@@ -274,7 +270,6 @@ alias ....="cd ../../.." # cd ../../..
 alias .....="cd ../../../.." # cd ../../../..
 
 #https://gist.github.com/zachbrowne/8bc414c9f30192067831fafebd14255c
-alias folders='du -h --max-depth=1' # Show directories size
 alias folderssort='find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn' # Show directories size ordered by size
 alias tree='tree -CAhF --dirsfirst' # Show recursive structure with file
 alias treed='tree -CAFd' # Show recursive directory structure
@@ -304,10 +299,6 @@ alias lst='ls -ltrh' # ls - sort by date
 # Remove empty directories
 alias rmdirempty='find . -type d -empty -delete' # find - remove all empty directories recursively
 
-# Count all files (recursively) in the current folder
-
-
-
 ###############################################################
 # LANGUAGE
 ###############################################################
@@ -321,7 +312,7 @@ alias spellcheck="aspell -t check --lang=en "
 ###############################################################
 
 alias dfc='dfc -W -d -s -T -t ext2,ext3,ext4,zfs,btrfs,fuseblk,fuse,ntfs,fat,xfs,nfs 2>/dev/null' # Show colorized mounts of real filesystems with bars
-alias mounts="mount | grep -v 'cgroup\|sysfs\|tmpfs\|proc\|debugfs\|securityfs\|devpts\|mqueue\|pstore\|hugetlbfs'" # mount - show real mounts only
+alias mounts="mount | grep -v '^fusectl\|^none\|^configfs\|^tracefs\|^portal\|^gfsd-fuse\|^cgroup\|^sysfs\|^tmpfs\|^proc\|^debugfs\|^securityfs\|^devpts\|^mqueue\|^pstore\|^hugetlbfs\|^binfmt_misc\|^systemd-1\|^devtmpfs\|^gvfsd-fuse'" # mount - show real mounts only
 
 #SSH MOUNTS
 #alias sshmounts=
@@ -402,8 +393,9 @@ alias copy='__copy()' # Copy file with a progress bar
 alias ping='ping -c 5 ' # ping -c 5
 
 #Debug http
-debug_http () { curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n" ; } # WARN:TOCHECK debug_http: download a web page and show info on what took time
-http_headers () { curl -I -L $@ ; } # WARN:TOCHECK http_headers: get just the HTTP headers from a web page (and its redirects)
+alias debug_http="__debug_http" # WARN:TOCHECK debug_http: download a web page and show info on what took time
+alias http_headers="__http_headers" # WARN:TOCHECK http_headers: get just the HTTP headers from a web page (and its redirects)
+
 
 #Downloading
 alias wget='wget -c' # wget -c for resuming
@@ -426,27 +418,23 @@ alias j='jobs -l' # Current running jobs
 alias p="ps aux | grep " # ps aux | grep 
 alias psn='ps aux | tail -n +2 | wc -l' # Total number of processes running
 alias psu='ps -fHU $USER' # ps for current user
+alias psa='ps aux' # ps for all users
 
-alias pskill='__pskill' # Kill a process by name
+# Not working
+#alias pskill='__pskill' # Kill a process by name
 
 ## get top process eating memory
-alias psmem='ps auxf | sort -nr -k 4'
-alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+alias psmem='ps auxf | sort -nr -k 4 | head -15'
 
 ## get top process eating cpu ##
-alias pscpu='ps auxf | sort -nr -k 3'
-alias pscpu10='ps auxf | sort -nr -k 3 | head -10'
+alias pscpu='ps auxf | sort -nr -k 3 | head -15'
 
 # to find memory hogs:
-alias mem_hogs_top='top -l 1 -o rsize -n 10'
-alias mem_hogs_ps='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
-
-alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10' # to find CPU hogs
-
-alias topcpu="/bin/ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10"
+#alias mem_hogs_top='top -l 1 -o rsize -n 10' # Not working
+#alias mem_hogs_ps='ps wauxm -o pid,stat,vsize,rss,time,command | head -10'
 
 
-#TODO NICE
+
 
 ###############################################################
 # SCREEN, SSH, terminal & TMUX RELATED
@@ -466,8 +454,6 @@ alias screenrename='__screenrename' # Rename screen session name, accept: [scree
 # Am I running on a screen, ssh or tmux session ?
 alias isscreen='__issc' # screen - check if running from a screen
 alias isssh='__isssh' # ssh - check if curently in a ssh session
-
-
 
 #TODO
 # alias istmux='__istmux' # Check if currently running in a tmux session
@@ -494,7 +480,11 @@ alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client origina
 ###############################
 # TERMINAL           
 ###############################
+
+#FIXME NOT WORKING
 alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NET_WM_PID | sed 's/^.*=//')"
+
+
 ###############################
 # TMUX            
 ###############################
@@ -591,17 +581,13 @@ alias tmuxkillall="tmux ls | grep : | cut -d. -f1 | awk '{print substr($1, 0, le
 #Connect
 ###############
 
-
 # TODO
 #tmux list sessions and prompt selection
 
 # TMUX DEFAULT CONF WINDOWS
 # https://stackoverflow.com/questions/5609192/how-to-set-up-tmux-so-that-it-starts-up-with-specified-windows-opened
 
-
-
 fi # End $TMUX if
-
 
 
 
@@ -609,7 +595,7 @@ fi # End $TMUX if
 # SEARCH AND FIND
 ######################################
 
-alias fgrept='__fgrept' # Searches for text in all files in the current folder recursively
+alias fgrepr='__fgrept' # Searches for text in all files in the current folder recursively
 
 ###############################################################################
 # SYS ADMIN RELATED 
@@ -639,24 +625,23 @@ alias messages='sudo tail -100f /var/log/messages' # View last and tail log mess
 
 alias allcron='for user in $(cut -f1 -d: /etc/passwd); do echo $user; crontab -u $user -l; done' # List all crontab jobs for all users, in sudo !
 
-alias gtop='/usr/bin/gnome-system-monitor &' # gnome-system-monitor - launch the application
-
-
+if [ -f /usr/bin/gnome-system-monitor ]; then
+alias gtop='/usr/bin/gnome-system-monitor 2> /dev/null &' # gnome-system-monitor - launch the application
+fi
 
 ###################
 # CPU
 ###################
 
-alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10' # Find top 10 CPU hogs
-alias pscpu='ps auxf | sort -nr -k 3' # Get top process eating cpu
-alias pscpu10='ps auxf | sort -nr -k 3 | head -10' # Get top 10 process eating cpu
-alias topcpu="ps -eo pcpu,pid,user,args | sort -k 1 -r | head -10" # Show top 10 cpu intensive process
+alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -15' # Find top 10 CPU hogs
+alias pscpu='ps auxf | sort -nr -k 3 | head -15' # Get top process eating cpu
+alias topcpu="ps -eo pcpu,pid,user,args | sort -k 1 -r | head -15" # Show top 10 cpu intensive process
 
 ###################
 # DISK
 ###################
 
-alias diskwho='sudo iotop' # Show processes reading/writing to disk #TODO BETTER !
+#alias diskwho='sudo iotop' # Show processes reading/writing to disk #TODO BETTER !
 
 
 ###################
@@ -678,7 +663,7 @@ alias apc="apcaccess | grep -E 'MODEL|STATUS|LOADPCT|BCHARGE|TIMELEFT|NOMPOWER'"
 ###################
 
 # Frees up the cached memory
-alias freemem2='sync && sudo /sbin/sysctl -w vm.drop_caches=3' # Free memory by droping caches 
+alias freemem='sync && sudo /sbin/sysctl -w vm.drop_caches=3' # Free memory by droping caches
 alias mem_hogs_top='top -l 1 -o rsize -n 10' # Find memory hogs
 alias mem_hogs_ps='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10' # Find top 10 memory hogs:
 alias psmem='ps auxf | sort -nr -k 4' # Get top process eating memory
@@ -688,7 +673,8 @@ alias psmem10='ps auxf | sort -nr -k 4 | head -10' # Get top 10 process eating m
 # NETWORKING
 ###################
 
-alias flushdns='sudo service nscd restart ' # Flush DNS entries
+#Not working
+#alias flushdns='sudo service nscd restart ' # Flush DNS entries
 
 # IPs and interfaces
 #FIXME alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" # Return public IP
@@ -734,14 +720,6 @@ alias ip_trace='pkt_trace ip' # tcpflow - ip_trace: to show all IP packets
 alias wgetlist="wget -ca -e robots=off --no-parent --recursive --mirror -p --convert-links --wait=5 -A html --cut-dirs=1 --user-agent=Mozilla/5.0 -P wgets/ -i  " # wget - Parse $1 file as http files to download and save to this directory
 debug_http () { curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n" ; } # curl - debug_http: download a web page and show info on what took time
 http_headers () { curl -I -L $@ ; } # curl - http_headers: get just the HTTP headers from a web page (and its redirects)
-
-#Does it works with interfaces aliases ??
-#Depricated
-#alias myip="nslookup . ifcfg.me | grep Address |tail -1 | awk '{print \$2}'" #Return public IP
-#alias mydns="nslookup . ifcfg.me | grep Name | awk '{print \$2}'" #Return public DNS
-#alias myips="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$4}'" #List all interfaces IPs
-#alias myif="ip -o addr show scope global | awk '{gsub(/\/.*/, \" \",\$4); print \$2 \" \" \$4}'" #List all interfaces and their IPs
-
 
 
 ###################

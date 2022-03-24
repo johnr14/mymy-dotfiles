@@ -365,7 +365,7 @@ __copy() { # Copy file with a progress bar
 	END { print "" }' total_size=$(stat -c '%s' "${1}") count=0
 }
 
-__fgrept() { # Searches for text in all files in the current folder recursively
+__fgrepr() { # Searches for text in all files in the current folder recursively
 	# -i case-insensitive
 	# -I ignore binary files
 	# -H causes filename to be printed
@@ -425,6 +425,9 @@ __whatsmyip () { # IP address lookup
 	# External IP Lookup
 	echo -n "External IP: " ; curl -s ifconfig.co 2> /dev/null
 }
+
+__debug_http () { curl -s $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n" ; }
+__http_headers () { curl -I -L $@ ; }
 
 #######################################
 # PARSING PIPES 
