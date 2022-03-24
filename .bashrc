@@ -232,6 +232,12 @@ fi
 # Only log out if attached to a tmux or screen
 # TODO
 
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    # set a 10 min timeout policy for bash shell
+    TMOUT=600
+    #readonly TMOUT 2> /dev/null
+    export TMOUT 2> /dev/null
+fi
 
 
 
