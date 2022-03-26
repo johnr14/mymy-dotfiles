@@ -336,7 +336,9 @@ echo "$WATT"
 #######################################
 #  FILES AND DIRECTORIES
 #######################################
-
+__back() {
+    cp "$1"{,.bak};
+}
 
 __cdls() { # perform 'ls' after 'cd' if successful.
   builtin cd "$*"
@@ -391,7 +393,15 @@ else
 fi
 }
 
-function show_empty_folders {
+function __rsyncpv { # Copy folder with rsync and produce a progress bar with based on number off files
+if [ -z $1 || -z $2 ]; then
+    echo -e \e[0;31;1mUsage: rsyncpv [source directory] [dest directory]\e[m;
+else
+    rsync -vrltD --stats --human-readable $1 $2 | pv -lep -s $(find $1 | grep -v -e "^\. " -e "^\.. " | wc -l)
+fi
+}
+
+function __show_empty_folders {
     find . -depth -type d -empty
 } # https://gist.github.com/torifat/1254570
 
@@ -598,25 +608,10 @@ __randpassgen() { < /dev/urandom tr -dc A-Za-z0-9_ | head -c$1 ; echo; }
 ###############################################################
 
 
-lessl () #Scroll to line
-{
-if [[ $# == 0 ]]; then
-command less -i -x4 -;
-return;
-fi;
-local num=$(sed -n 's,^.*:([0-9]*)$,1,p' <<< "$1");
-local file="${1%:$num}";
-shift;
-if [[ -n $num ]]; then
-command less -i -x4 +${num}g "$file" "$@";
-else
-command less -i -x4 "$file" "$@";
-fi
-}
 
 
 #kill a process by name
-pskill()
+__pskill()
 {
 if [ -z $1 ]; then
 echo -e \e[0;31;1mUsage: pskill [processName]\e[m;
@@ -626,7 +621,7 @@ fi
 }
 
 #mkdir and cd combined
-mkcd()
+__mkcd()
 {
 if [ -z $1 ]; then
 echo -e \e[0;31;1mUsage: mkcd [directory]\e[m;
@@ -643,7 +638,7 @@ fi
 }
 
 # perform 'ls' after 'cd' if successful.
-cdls() {
+__cdls() {
   builtin cd "$*"
   RESULT=$?
   if [ "$RESULT" -eq 0 ]; then
@@ -654,7 +649,7 @@ cdls() {
 #TODO
 #LIST & EXTRACT ##DAR,ZPAQ,XZ ??
 
-ex () {
+__ex () {
   if [ -f $1 ] ; then
       case $1 in
           *.tar.bz2)   tar xvjf $1    ;;

@@ -21,9 +21,7 @@
 # There are quite a few TODO & FIXME
 # - Make it more portable for other BSDs
 # Once you have lots of alias, searching them with the command
-# aliassearch KEYWORD will return matching results for alias
-# ffnd KEYWORD will return matching results for functions
-# afnd KEYWORD will return matching results for alias and functions
+# alias-search KEYWORD will return matching results for alias
 #   That's why comments are on the same line, to be easily parsed
 #   And it's required that a # comment is on every alias for easy description
 #
@@ -102,6 +100,7 @@ alias alias-viewcmd="cat /home/$(logname)/.bash_aliases | grep -i" # alias - Sho
 ###############################################################
 
 #alias bkbash='__bkbash' # Backup bash configuration files
+alias bak="__back" # copy file $1 to $1.bak for backup
 
 alias config='/usr/bin/git --git-dir=/home/$(logname)/.cfg/ --work-tree=/home/$(logname)'
 
@@ -211,12 +210,16 @@ alias gcup='gc && gup' # Git commit and git up and push
 alias gitlog-resumed="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit" # git - git log overview of commits for a file 
 alias gitlog-view="git log --follow -p -- " # git - view all changes from commits on a file
 
+#alias treei="tree -I $(cat .gitignore | tr '\n' '|' | sed -e 's/|$/\n/' -e 's/\///g') " # tree but ignore everything in .gitignore
+
 ###############################################################
 # COMPRESSION AND DECOMPRESSION
 ###############################################################
 
 # Compressed files
 alias extract='__ex' # Extract compressed file by matching extension
+alias rsyncavp='rsync -av --info=progress2 --no-inc-recursive' # rsync with progress bar
+alias rsyncpv="__rsyncpv" # FIXME in a function
 
 ###############################################################
 # DESKTOP RELATED
@@ -296,7 +299,8 @@ alias lsc='ls -lcrh' # ls - sort by change time
 alias lsu='ls -lurh' # ls - sort by access time
 alias lst='ls -ltrh' # ls - sort by date
 
-# Remove empty directories
+# Find and remove empty directories
+alias lsemptydir="__show_empty_folders"
 alias rmdirempty='find . -type d -empty -delete' # find - remove all empty directories recursively
 
 ###############################################################
@@ -391,6 +395,8 @@ alias copy='__copy()' # Copy file with a progress bar
 ###############################################################
 
 alias ping='ping -c 5 ' # ping -c 5
+alias opencon="lsof -P -i -n" # list open connections
+alias port='netstat -tulanp' # show opened ports
 
 #Debug http
 alias debug_http="__debug_http" # WARN:TOCHECK debug_http: download a web page and show info on what took time
@@ -421,7 +427,7 @@ alias psu='ps -fHU $USER' # ps for current user
 alias psa='ps aux' # ps for all users
 
 # Not working
-#alias pskill='__pskill' # Kill a process by name
+alias pskill='__pskill' # Kill a process by name
 
 ## get top process eating memory
 alias psmem='ps auxf | sort -nr -k 4 | head -15'
