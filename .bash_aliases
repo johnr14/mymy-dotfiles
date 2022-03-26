@@ -488,8 +488,9 @@ alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client origina
 ###############################
 
 #FIXME NOT WORKING
-alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NET_WM_PID | sed 's/^.*=//')"
-
+#alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NET_WM_PID | sed 's/^.*=//')"
+alias termname="basename $(ps -p $(ps -p $$ -o ppid=) o args=)"
+alias ttyc="__ttyc" # Return current tty number
 
 ###############################
 # TMUX            
@@ -499,6 +500,7 @@ alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NE
 if [ -n "$TMUX" ]; then
 
 alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x1b[0m\n\"; done | column" # print - print table of all tmux colors
+alias tmuxcolors2='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; done | column'
 
 #######################
 # Get information

@@ -305,11 +305,11 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
                 UNIQTTYNAME="tmux_$(tmuxcpa)"
             fi
         else
-            UNIQTTY="$REMOTEIP@ssh>pts_$(ttyc)"
+            UNIQTTY="$REMOTEIP@ssh>pts_$(__ttyc)"
             if [ -n "$TERMNAME" ]; then
-                UNIQTTYNAME="$TERMNAME_pts_$(ttyc)"
+                UNIQTTYNAME="$TERMNAME_pts_$(__ttyc)"
             else
-                UNIQTTYNAME="pts_$(ttyc)"
+                UNIQTTYNAME="pts_$(__ttyc)"
             fi
         fi
     else 
@@ -317,20 +317,20 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
         INPTS=$(tty | grep pts)
         if [ ! -z $INPTS ]; then 
             # We have a pts
-            UNIQTTY="pts=$(ttyc)"
+            UNIQTTY="pts=$(__ttyc)"
             if [ -n "$TERMNAME" ]; then
-                UNIQTTYNAME="${TERMNAME}_pts_$(ttyc)"
+                UNIQTTYNAME="${TERMNAME}_pts_$(__ttyc)"
             else
-                UNIQTTYNAME="pts_$(ttyc)"
+                UNIQTTYNAME="pts_$(__ttyc)"
             fi
         else
             # Not using pts, then a real tty
-            UNIQTTY="tty=$(ttyc)"
+            UNIQTTY="tty=$(__ttyc)"
 
             if [ -n "$TERMNAME" ]; then
-                UNIQTTYNAME="${TERMNAME}_tty_$(ttyc)"
+                UNIQTTYNAME="${TERMNAME}_tty_$(__ttyc)"
             else
-                UNIQTTYNAME="tty_$(ttyc)"
+                UNIQTTYNAME="tty_$(__ttyc)"
             fi
 
         fi
@@ -382,6 +382,9 @@ fi
 ###############
 # TMUX
 ###############
+
+# Create models of tmux configs
+# https://stackoverflow.com/questions/5609192/how-to-set-up-tmux-so-that-it-starts-up-with-specified-windows-opened
 
 ###############################################################################
 # X11

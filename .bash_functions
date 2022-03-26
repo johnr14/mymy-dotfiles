@@ -485,6 +485,11 @@ fi
 # SCREEN, TMUX & SSH RELATED
 #######################################
 
+
+__ttyc(){ # Get current pts number
+  tty | sed -e "s:/dev/::" -e "s:pts/::" -e "s:pts/::"
+}
+
 __isscreen(){ # Check if running from a screen
 if [ "$(ps -o comm= -p $PPID)" == "screen" ]; then 
     echo "Running from screen $(CURSCREENPID=$(ps -o pid -p $PPID | tail -n1); screen -ls | grep $CURSCREENPID | awk '{ print $1 }')"
