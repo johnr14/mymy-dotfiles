@@ -242,7 +242,11 @@ while [[ $# -gt 0 ]]; do
         shift # past value
         ;;
         -p|--path)
+        # FIXME
         HH_PATH="$2"
+        echo "in path"
+        cat $HOME/.bash_history-merged | awk -v p="$2" -vFPAT='("[^"]+")' '{ if ($4 ~ $p) print $0; }' #
+        return
         shift # past argument
         shift # past value
         ;;

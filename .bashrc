@@ -47,12 +47,13 @@
 # PATH="/sbin:$PATH"
 
 # If not running interactively, don't do anything
+# Should path be fixed first ?
 case $- in
     *i*) ;;
       *) return;;
 esac
 
-# Warn if HOSTNAME != hostnamectl
+# Warn if $HOSTNAME != hostnamectl; needed in some VM
 if [ -f /usr/bin/hostnamectl ]; then
     if [[ "$(hostnamectl --static)" != "$HOSTNAME" ]]; then
         echo "WARNING: Hostname is not the same as the variable \$HOSTNAME"

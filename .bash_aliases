@@ -102,7 +102,9 @@ alias alias-viewcmd="cat /home/$(logname)/.bash_aliases | grep -i" # alias - Sho
 #alias bkbash='__bkbash' # Backup bash configuration files
 alias bak="__back" # copy file $1 to $1.bak for backup
 
-alias config='/usr/bin/git --git-dir=/home/$(logname)/.cfg/ --work-tree=/home/$(logname)'
+#alias config='/usr/bin/git --git-dir=/home/$(logname)/.cfg/ --work-tree=/home/$(logname)'
+
+alias mymy-dotfiles-up="cd ~ ; git pull origin master; cd -"
 
 ###############################################################
 # Bash related                                           
@@ -121,6 +123,10 @@ alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' 
 alias hh="__hh" # history - return last 15 cmd run; can also pass argument to grep output
 alias hhpwd="__hhpwd" # hhpwd - return last directories where commands where run
 #fi
+
+#hh | awk '{ print $2 }' | uniq
+#hh | awk '{ $1=$2=$3=$4=""; print $0 }' | sed -e 's/\   //' | sort | uniq
+
 
 #######################################
 # COLORIZE
@@ -487,7 +493,6 @@ alias sshfromwhere="echo $SSH_CLIENT | awk '{ print $1 }'" # Find client origina
 # TERMINAL           
 ###############################
 
-#FIXME NOT WORKING
 #alias termname="ps -o comm= -p \$(xprop -notype -id \"$WINDOWID\" 32i '=\$0' _NET_WM_PID | sed 's/^.*=//')"
 alias termname="basename $(ps -p $(ps -p $$ -o ppid=) o args=)"
 alias ttyc="__ttyc" # Return current tty number
@@ -499,12 +504,15 @@ alias ttyc="__ttyc" # Return current tty number
 # If tmux is not accessible, line in a sudo, you may get errors trying to parse those aliases
 if [ -n "$TMUX" ]; then
 
-alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x1b[0m\n\"; done | column" # print - print table of all tmux colors
-alias tmuxcolors2='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; done | column'
+#alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x1b[0m\n\"; done | column"
+alias tmuxcolors2='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; done | column' # print - print table of all tmux colors
 
 #######################
 # Get information
 #######################
+
+# tmux has a lost of aliases, so have a short one to get help
+alias tmux-help="alias-search \"tmux\" " # Get a list of tmux aliases
 
 #  tmux display -t yakuake:2.1 -p '#{pane_width}-#{pane_height}'
 
