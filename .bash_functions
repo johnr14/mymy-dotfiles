@@ -11,7 +11,7 @@
 # HELPER FUNCTIONS 
 ###############################################################################
 
-__fixpath(){
+__fixpath(){ # https://www.linuxjournal.com/content/removing-duplicate-path-entries
 PATH="$(echo -n $PATH | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}')"
 }
 
@@ -230,10 +230,17 @@ history 1 | sed 's/^ *[0-9]* *//'
 function __hh ()
 { #https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 # FIXME WIP STOPPED HERE
+# TODO
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
+        -a|--all)
+        cat $HOME/.bash_history-merged
+        return
+        shift # past argument
+        shift # past value
+        ;;
         -p|--path)
         HH_PATH="$2"
         shift # past argument
@@ -250,16 +257,19 @@ while [[ $# -gt 0 ]]; do
         shift # past value
         ;;
         -l|--list)
-        echo "Possible terminals :"
+        echo -e "\nPossible terminals :"
         cat $HOME/.bash_history-merged | awk -vFPAT='("[^"]+")' '{print $2}' | sort | uniq
-        echo "Possible computers :"
+        echo -e "\nPossible computers :"
         cat $HOME/.bash_history-merged | awk -vFPAT='("[^"]+")' '{print $3}' | sort | uniq
+        echo -e "\nPossible path :"
+        cat $HOME/.bash_history-merged | awk -vFPAT='("[^"]+")' '{print $4}' | sort | uniq
         return
         ;;
         -h|--help)
         echo "
         
 Search $HOME/.bash_history-merged
+    -a|--all        get all history
     -p|--path       matching path of pwd
     -t|--terminal   match terninal name
     -c|--computer   match computer name
@@ -267,6 +277,7 @@ Search $HOME/.bash_history-merged
     -h|--help       this help
         "
         shift # past argument
+        return 1
         ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later

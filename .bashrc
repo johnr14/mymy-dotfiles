@@ -52,8 +52,14 @@ case $- in
       *) return;;
 esac
 
-
-
+# Warn if HOSTNAME != hostnamectl
+if [ -f /usr/bin/hostnamectl ]; then
+    if [ $(hostnamectl --static) != $HOSTNAME ]; then
+        echo "WARNING: Hostname is not the same as the variable \$HOSTNAME"
+        echo "Trying to change it"
+        hostnamectl set-hostname --static $HOSTNAME
+    fi
+fi
 
 #############################
 # First run check
@@ -109,6 +115,18 @@ fi
 # FIXME file was not created !
 if [ -f $DOTFILES_PATH/.bash_autocompletition ]; then
     . $DOTFILES_PATH/.bash_autocompletition
+fi
+
+#######################
+# Conditionnal files
+#######################
+
+###############
+# Qubes OS
+###############
+
+if [ -f $DOTFILES_PATH/.bash_functions_qubesos ]; then
+    . $DOTFILES_PATH/.bash_functions_qubesos
 fi
 
 
