@@ -54,7 +54,7 @@ esac
 
 # Warn if HOSTNAME != hostnamectl
 if [ -f /usr/bin/hostnamectl ]; then
-    if [ "$(hostnamectl --static)" != "$HOSTNAME" ]; then
+    if [[ "$(hostnamectl --static)" != "$HOSTNAME" ]]; then
         echo "WARNING: Hostname is not the same as the variable \$HOSTNAME"
         echo "Trying to change it"
         if [ $(hostnamectl set-hostname --static $HOSTNAME) != 0 ]; then
