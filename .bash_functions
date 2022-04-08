@@ -174,6 +174,14 @@ LIGHTGREENCODE='\e[1;32m'
 cat $HOME/.bash_aliases | grep "^alias" | sort | grep "$1" | sed -r 's/\s+/ /' | sed 's/=.*#/ \t: #/' | sed 's/^alias //'  | sed "s/^/$(printf $LIGHTBLUECODE)/; s/ /$(printf $LIGHTGREENCODE) /" | sort | column -t -s:
 }
 
+__escapechar() { # Add escape chars to string
+
+for value in "$@" # You want to use "$@" here, not "$*" !!!!!
+do
+    printf "%q" "$value" | sed 's/-/\\-/g'
+done
+}
+
 #https://gist.github.com/zachbrowne/8bc414c9f30192067831fafebd14255c
 # Automatically install the needed support files for this .bashrc file
 install_bashrc_support ()
@@ -504,6 +512,92 @@ fi
 # SCREEN, TMUX & SSH RELATED
 #######################################
 
+__tmux-isrunning(){
+if [[ $(tmux info 2> /dev/null) ]]; then
+    echo "1"
+fi
+}
+
+__tmux-termname(){
+#Those have problems with numbers and special caracters for grep
+#pstree -p -h -s $(ps -t $(tmux list-clients | grep $(__escapechar $(display-message -p '#S')) | sed -e 's/\/dev\///' -e 's/:.*//') -o pid | tail -n1) | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d' | head -n1 | sed -e 's/---//' #-e 's/([^)]*)//g' -e 's/-$//'
+#pstree -p -h -s $(ps -t $(tmux list-clients | grep -F $(display-message -p '#S')) | sed -e 's/\/dev\///' -e 's/:.*//') -o pid #| tail -n1 ) | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d' | head -n1 | sed -e 's/---//' #-e 's/([^)]*)//g' -e 's/-$//'
+#tmux list-clients | grep $(tmux display-message -p '#S' | sed -e 's/-/\\-/g' -e 's/(/\\(/g' -e 's/)/\\)/g')
+if [[ $(__tmux-isrunning) ]]; then
+    pstree -p -h -s $(ps -t $(tmux list-clients | grep --color=never -F $(tmux display-message -p '#S') | sed -e 's/\/dev\///' -e 's/:.*//') -o pid | tail -n1) | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d' | head -n1 | sed -e 's/---//'
+else
+    echo "TMUX NOT RUNNINT"
+    return 1
+fi
+}
+
+__tmux-termpid(){
+# to remove color code : sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"
+#https://stackoverflow.com/questions/17998978/removing-colors-from-output
+if [[ $(__tmux-isrunning) ]]; then
+    pstree -p -h -s $(ps -t $(tmux list-clients | grep --color=never -F $(tmux display-message -p '#S') | sed -e 's/\/dev\///' -e 's/:.*//') -o pid | tail -n1) | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d' | head -n1 | sed -e 's/---//' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" | sed -e 's/[^0-9]*//g'
+else
+    #echo "TMUX NOT RUNNINT"
+    return 1
+fi
+}
+
+__tmux-termfullname(){
+if [[ $(__tmux-isrunning) ]]; then
+    basename $(ps -o command $(__tmux-termpid) | tail -n1)
+else
+    return 1
+fi
+}
+
+__tmux-termfullnameandpid(){
+echo "$(basename $(ps -o command $(__tmux-termpid) | tail -n1))($(__tmux-termpid))"
+}
+
+__tmux-launch(){
+
+if [[ $(__tmux-isrunning) ]]; then
+    echo "We have at least a tmux running"
+fi
+
+# check if a tmux is funning for termname
+currenttermfullnameandpid=$(echo "$(basename $(ps -o command $PPID | tail -n+2))($(echo $PPID))")
+echo $currenttermfullnameandpid
+alreadyrunninginterm=$(tmux list-client | grep -F $currenttermfullnameandpid)
+if [[ -n $alreadyrunninginterm ]]; then
+    echo "found !"
+    tmuxisrunninginsameterminal=1
+else
+    echo "not found"
+fi
+
+#TODO CHECK IF WORKS IN SSH !
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    tmuxterminalname="ssh@$HOST"
+else
+#Get local client terminal name
+#__tmux-termname doesn't work here
+    tmuxterminalname=$(__tmux-termfullnameandpid)
+    echo $tmuxterminalname
+fi
+#ps -p $$ -o ppid=
+#pstree -p -h -s $(ps -t $(tmux list-clients | grep $(tmux display-message -p '#S') | sed -e 's/\/dev\///' -e 's/:.*//') -o pid | tail -n1) # | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d'
+#pstree -p -h -s $PID
+
+if [[ ! -n $tmuxisrunninginsameterminal ]]; then
+echo "we connect to session"
+#tmux new-session \; \
+#  send-keys 'tail -f /var/log/monitor.log' C-m \; \
+#  split-window -v -p 75 \; \
+#  split-window -h -p 30 \; \
+#  send-keys 'top' C-m \; \
+#  select-pane -t 1 \; \
+#  split-window -v \; \
+#  send-keys 'weechat' C-m \;
+else
+    echo "we launch a new session"
+fi
+}
 
 __ttyc(){ # Get current pts number
   tty | sed -e "s:/dev/::" -e "s:pts/::" -e "s:pts/::"

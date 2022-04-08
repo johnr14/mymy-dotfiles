@@ -504,8 +504,39 @@ alias ttyc="__ttyc" # Return current tty number
 # If tmux is not accessible, line in a sudo, you may get errors trying to parse those aliases
 if [ -n "$TMUX" ]; then
 
+## get current tmux session name
+# tmux display-message -p '#S'
+## list tmux clients and filter by name
+# tmux list-clients | grep $(tmux display-message -p '#S')
+# tmux list-clients | grep $(tmux display-message -p '#S') | sed -e 's/\/dev\///' -e 's/:.*//'
+#pstree -p -h -s $(ps -t $(tmux list-clients | grep $(tmux display-message -p '#S') | sed -e 's/\/dev\///' -e 's/:.*//') -o pid | tail -n1) | cut -f 1- -d ')' --output-delimiter=$')\n' | grep -v -e 'tmux' -e 'bash' -e 'systemd' | sed -r '/^\s*$/d' | head -n1 | sed -e 's/---//' -e 's/([^)]*)//g' -e 's/-$//'
+
+
+
+alias tmux-cheat-sheet="echo '
+###############################################
+# TMUX CHEAT SHEET
+###############################################
+## SESSIONS ##
+# C-a d         detach from session
+# C-a $         rename the current session
+# C-a s         choose a session from a list
+# C-a x         kill current session
+## WINDOWS ###
+#C-a c          create a new window
+#C-a 1 ...      switch to window 1, ..., 9, 0
+#C-a 9
+#C-a 0
+#C-a p          previous window
+#C-a n          next window
+#C-a l          ‘last’ (previously used) window
+#C-a w          choose window from a list
+#C-a -          split horizontal
+#C-a |          split vertical
+'" # tmux cheat sheet
+
 #alias tmuxcolors="for i in {0..255}; do     printf \"\x1b[38;5;${i}mcolour${i}\x1b[0m\n\"; done | column"
-alias tmuxcolors2='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; done | column' # print - print table of all tmux colors
+alias tmuxcolors='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; done | column' # print - print table of all tmux colors
 
 #######################
 # Get information
@@ -515,6 +546,12 @@ alias tmuxcolors2='for i in {0..255}; do printf "\x1b[38;5;${i}m${i}\x1b[0m\n"; 
 alias tmux-help="alias-search \"tmux\" " # Get a list of tmux aliases
 
 #  tmux display -t yakuake:2.1 -p '#{pane_width}-#{pane_height}'
+alias tmux-termname="__tmux-termname"
+
+###############
+# tmux launch
+###############
+
 
 
 ###############

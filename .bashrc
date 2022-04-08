@@ -412,6 +412,27 @@ fi
 # Create models of tmux configs
 # https://stackoverflow.com/questions/5609192/how-to-set-up-tmux-so-that-it-starts-up-with-specified-windows-opened
 
+#Check if we where launched in a tmux and rename session
+if [[ $(__tmux-isrunning) ]]; then
+    if [[ -n $TMUX ]]; then
+        #echo "We have at least a tmux running and we are in it"
+        re='^[0-9]+$'
+        if [[ $(tmux display-message -p '#S') =~ $re ]]; then
+            #echo "we have a numeric session name"
+            # check if session name is already taken
+            alreadyrunninginterm=$(tmux list-client | grep -F $(__tmux-termfullnameandpid))
+            nextnb=$(echo $alreadyrunninginterm | wc -l)
+            ((nextnb++))
+            if [[ -n $alreadyrunninginterm ]]; then
+                #echo "We must append to the name"
+                tmux rename-session -t $(tmux display-message -p '#S') $(__tmux-termfullnameandpid)-$nextnb
+            else
+                #echo "we can use tha name"
+                tmux rename-session -t $(tmux display-message -p '#S') $(__tmux-termfullnameandpid)
+            fi
+        fi
+    fi
+fi
 ###############################################################################
 # X11
 ###############################################################################
