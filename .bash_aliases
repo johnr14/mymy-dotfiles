@@ -83,11 +83,11 @@ LIGHTNING_BOLT="⚡"
 ###############################################################
 
 
-alias alias-less='cat /home/$(logname)/.bash_aliases | grep "^alias" | less -R' # Show alias
+alias alias-less='cat /home/$LOGNAME/.bash_aliases | grep "^alias" | less -R' # Show alias
 #alias alias-less="less $HOME/.bash_aliases" # alias - Show all aliases
-alias alias-reload="source /home/$(logname)/.bash_aliases"  # alias - Reload only aliases
+alias alias-reload="source /home/$LOGNAME/.bash_aliases"  # alias - Reload only aliases
 alias alias-search='__aliassearch' # Search for alias by keyword
-alias alias-viewcmd="cat /home/$(logname)/.bash_aliases | grep -i" # alias - Show cmd for an alias
+alias alias-viewcmd="cat /home/$LOGNAME/.bash_aliases | grep -i" # alias - Show cmd for an alias
 #cat .bash_aliases | grep "^alias" | sort
 
 # TODO expand alias 
@@ -153,7 +153,7 @@ alias exit='clear; exit'
 alias lspath='echo -e ${PATH//:/\\n}' # List paths in $PATH
 
 #alias reload='source $HOME/.bashrc'     # Reload bashrc 
-alias reload='source /home/$(logname)/.bashrc'     # Reload bashrc 
+alias reload='source /home/$LOGNAME/.bashrc'     # Reload bashrc
 alias less='less -R'
 
 alias allttys="ps a | grep -vi 'tty*' " # ps - list all opened tty
