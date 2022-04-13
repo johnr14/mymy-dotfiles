@@ -54,7 +54,7 @@ case $- in
 esac
 
 # Warn if $HOSTNAME != hostnamectl; needed in some VM
-if [ -f /usr/bin/hostnamectl ]; then
+if [[ -f /usr/bin/hostnamectl ]]; then
     if [[ "$(hostnamectl --static)" != "$HOSTNAME" ]]; then
         echo "WARNING: Hostname is not the same as the variable \$HOSTNAME"
         echo "Trying to change it"
@@ -94,19 +94,20 @@ fi
 # Set things up
 ###############################
 
+
 #######################
 # Load files
 #######################
 # Use realuser for homedir so it can work when in "sudo su"
 
-if [ "$(logname)" = "root" ]; then
+if [[ "$LOGNAME" = "root" ]]; then
   if [ -f /root/.bash_aliases ]; then 
       DOTFILES_PATH="$HOME"
   else 
-    DOTFILES_PATH="/home/$(logname)"
+    DOTFILES_PATH="/home/$LOGNAME"
   fi
 else
-    DOTFILES_PATH="/home/$(logname)"
+    DOTFILES_PATH="/home/$LOGNAME"
 fi
 
 if [ -f $DOTFILES_PATH/.bash_aliases ]; then
@@ -366,12 +367,12 @@ if [ "$(id -u)" -ne 0 ]; then # We are not root
 
     # We write direcly to the merged history file from the command prompt 
 
-    export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
-    export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
+    export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$LOGNAME/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$LOGNAME/.bash_history-merged'
+    export HISTFILE="/home/$LOGNAME/.bash_histories/$UNIQTTYNAME" # reset the file
 
 else
     # we are user root
-    if [ "$(logname)" = "root" ]; then
+    if [[ "$LOGNAME" = "root" ]]; then
         # This means mymy-bash was installed in root user !
         export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /root/.bash_history-merged'
         export HISTFILE="/root/.bash_histories/$UNIQTTYNAME" # reset the file
@@ -379,16 +380,16 @@ else
         # we are root but it was thru a sudo su
         # check that bash_functions is loaded
         if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then 
-            . /home/$(logname)/.bash_functions 
+            . /home/$LOGNAME/.bash_functions
         else 
             . $DOTFILES_PATH/.bashrc
-            #. /home/$(logname)/.bashrc
+            #. /home/$LOGNAME/.bashrc
         fi
         mkdir -p /root/.bash_histories # make sure the directory exist
-        export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$(logname)/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /root/.bash_history-merged'
+        export PROMPT_COMMAND=' history -a; history -c; history -r; if [ -n "$(LC_ALL=C type -t __history1)" ] && [ "$(LC_ALL=C type -t __history1)" = function ]; then :; else . /home/$LOGNAME/.bashrc; fi; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTYNAME\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /root/.bash_history-merged'
         export HISTFILE="/root/.bash_histories/$UNIQTTYNAME" # reset the file
-        #export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$(logname)/.bash_history-merged'
-        #export HISTFILE="/home/$(logname)/.bash_histories/$UNIQTTYNAME" # reset the file
+        #export PROMPT_COMMAND=' history -a; history -c; history -r; echo "\"$(date "+%Y-%m-%d.%H:%M:%S")\" \"$UNIQTTY\" \"$HOSTNAME\" \"$(pwd)\" $(__history1) " >> /home/$LOGNAME/.bash_history-merged'
+        #export HISTFILE="/home/$LOGNAME/.bash_histories/$UNIQTTYNAME" # reset the file
     fi
 fi
 #export HISTTIMEFORMAT="$HOSTNAME $UNIQTTY %d/%m/%y %T : " #Timestamp the bash history
@@ -606,7 +607,7 @@ STRIKE="\[\e[9m\]"
 #echo -e "\e[31mHello World\e[0m"
 #echo -e "\x1B[31mHello World\e[0m"
 
-REALUSER=$(logname) # If in sudo, who are you logged as
+REALUSER=$LOGNAME # If in sudo, who are you logged as
 #REALUSER=$(who am i | awk '{print $1}'
 if [[ ! -z "$STY" ]]; then
     MULTNAME="¤$(echo $STY | sed -e 's/.*\.\(.*\)\..*/\1/')" # If in a screen, what's the name
